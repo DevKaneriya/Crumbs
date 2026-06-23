@@ -1,0 +1,34 @@
+<div class="heading">
+    <div class="header">
+        What People Are Saying
+    </div>
+    
+</div>
+<div class="slickSlider">
+    <div class="feedbackcarousel" style="max-width: 100%">
+
+        <div class="card_carousel cards" *ngFor=" let item of feedback">
+            <div class="feedback" >
+
+                <div class="ratings">
+                    <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                </div>
+
+                <div class="feedback-header">
+                    {{item.header}}
+                </div>
+
+                <div class="feedback-content">
+                    {{item.content}}
+                </div>
+
+                <div class="feedback-name">
+                    {{item.name}}
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>

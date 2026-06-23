@@ -1,0 +1,177 @@
+.main {
+  background-color: var(--background-color);
+  padding: var(--padding);
+  display: flex;
+  justify-content: space-around;
+}
+
+.image {
+  display: flex;
+  justify-content: right;
+  width: 50%;
+}
+
+.image img {
+  min-width: 300px;
+  max-width: 600px;
+  width: 70%;
+  height: 100%;
+  max-height: 550px;
+}
+
+.right-content {
+  position: relative;
+  width: 50%;
+  display: flex;
+  align-items: center;
+}
+
+.wrapper {
+  background-color: var(--background-color);
+  padding: 40px 60px;
+  position: absolute;
+  left: -40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.header {
+  font-size: var(--header);
+  font-weight: var(--header-weight);
+  font-family: var(--head-font);
+  color: var(--head-color);
+  width: 70%;
+}
+
+.content {
+  font-size: var(--content);
+  font-weight: var(--content-weight);
+  width: 70%;
+}
+
+button {
+  font-size: var(--button);
+  font-weight: 600;
+  background-color: transparent;
+  border: none;
+  width: max-content;
+  position: relative;
+  cursor: pointer;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  height: 2px;
+  width: 100%;
+  background: black;
+  transition: width 0.4s ease;
+  transition-delay: 0.4s;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 2px;
+  width: 0;
+  background: black;
+  transition: width 0.4s ease;
+}
+
+button:hover::before {
+  width: 0;
+  transition-delay: 0s;
+}
+
+button:hover::after {
+  width: 100%;
+  transition-delay: 0.4s;
+}
+
+
+
+@media(max-width: 1250px) {
+
+  .header {
+    width: 100%;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .image img {
+    width: 100%;
+  }
+
+}
+
+
+@media (max-width:768px) {
+
+  .main {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .image {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .image img {
+    width: 100%;
+  }
+
+  .right-content {
+    margin: 0 auto;
+    width: 90%;
+    height: 200px;
+  }
+
+  .wrapper {
+    left: 0%;
+    top: -40px;
+    padding: 40px 30px;
+  }
+
+  .header {
+    width: 100%;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+}
+
+
+
+@media (max-width:458px) {
+
+  .right-content {
+    height: 230px;
+  }
+
+}
+
+@media (max-width:414px) {
+
+  .right-content {
+    height: 250px;
+  }
+
+}
+
+@media (max-width:379px) {
+
+  .right-content {
+    height: 290px;
+  }
+
+}

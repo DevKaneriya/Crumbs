@@ -1,0 +1,84 @@
+{
+    "categories": [
+        {   "id": 1,
+            "route": "all-products",
+            "name": "All Products",
+            "text": "Shop All",
+            "icon": "assets/icon1.png",
+            "image": "assets/category/tiny-miny.webp",
+            "content": "Discover a wide selection of premium mouth fresheners and mukhwas. Our luxurious products combine classic and modern flavors, made with top-quality ingredients for a refreshing experience."
+        },
+        {
+            "id": 2,
+            "route": "best-sellers",
+            "name": "Much Loved Treats",
+            "text": "Best Sellers",
+            "icon": "assets/icon2.png",
+            "image": "assets/category/best-sellers.webp",
+            "content": "Discover Surili Mukhwas' bestsellers: Classic Pan Supari Fusion, Spicy Minty Saunf Elixir, Tangy Imli Goli Temptation, Royal Anardana Mix, Spicy Adrak Dhaniya Crunch, Saffron Pistachio Symphony, and Sweet Caramelized Elaichi Bliss. Enjoy these flavorful treats!"
+        },
+        {
+            "id": 3,
+            "route": "sugar-free",
+            "name": "Sugar Free",
+            "text": "Sugar Free",
+            "icon": "assets/icon3.png",
+            "image": "assets/products/sugar-free/digestive-mukhwas.webp",
+            "content": "Our Sugar-Free Healthy Mukhwas is a refreshing blend of roasted seeds, natural mint, and citrus zest, designed to promote digestion and freshen breath without added sugars. Conveniently packaged, it's perfect for post-meal freshness or an anytime snack."
+        },
+        {
+            "id": 4,
+            "route": "mukhwas",
+            "name": "Mukhwas",
+            "text": "Mukhwas",
+            "icon": "assets/icon1.png",
+            "image": "assets/category/mukhwas.webp",
+            "content": "Discover a unique post-meal experience with Surili's heterogeneous spice mix. This selection of authentic Indian seeds and spices enhances its rich aroma, creating a delightful mukhwas with a blend of harmonious flavors."
+        },
+        {
+            "id": 5,
+            "route": "churan",
+            "name": "Churan",
+            "text": "Churan",
+            "icon": "assets/icon2.png",
+            "image": "assets/products/sugar-free/dilkhush-mukhwas.webp",
+            "content": "Surili's churan is a testament to our dedication to traditional recipes and high-quality ingredients. Experience the therapeutic benefits of our finely crafted churan, promoting digestive wellness."
+        },
+        {
+            "id": 6,
+            "route": "supari",
+            "name": "Supari",
+            "text": "Supari",
+            "icon": "assets/icon3.png",
+            "image": "assets/products/sugar-free/dhana-dal-special-mukhwas.webp",
+            "content": "Tailored top quality supari which gives you an amazing crunch and long-lasting freshness. Our dedication to provroutee quality makes it possible to ensure a great experience for every piece of manufactured product."
+        },
+        {
+            "id": 7,
+            "route": "pan",
+            "name": "Pan",
+            "text": "Pan",
+            "icon": "assets/icon1.png",
+            "image": "assets/category/pan.webp",
+            "content": "Explore the unique essence of pan mukhwas from Surili, meticulously crafted to capture the authentic flavor of pan leaves. Enjoy a burst of freshness and cultural richness in every bite."
+        },
+        {
+            "id": 8,
+            "route": "tiny-miny",
+            "name": "Tiny Miny",
+            "text": "Tiny Miny",
+            "icon": "assets/icon2.png",
+            "image": "assets/products/sugar-free/gujarati.webp",
+            "content": "Indulge in the perfect blend of sweetness and freshness with Surili's sugar coated items. Each piece is crafted precisely, offering a detectable treat that satisfies the palate."
+        },
+        {
+            "id": 9,
+            "route": "gifts-combos",
+            "name": "Gifts & Combos",
+            "text": "Combo's",
+            "icon": "assets/icon3.png",
+            "image": "assets/category/tiny-miny.webp",
+            "content": "Indulge in our curated Gifts & Combos collection, featuring premium Mukhwas blends and complementary delights. Elevate your gifting experience with flavors crafted to delight and impress."
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+<section>
+    <h2 class="header">Why Choose Us</h2>
+    <div class="qualities-container">
+        <div class="quality-card" *ngFor="let item of qualities">
+            <i class="quality-icon" [class]="item.icon"></i>
+            <div class="title">{{ item.title }}</div>
+            <div class="description">{{ item.description }}</div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,50 @@
+.scroll-top-btn {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease, transform 0.2s ease-in-out;
+    opacity: 0.8;
+    z-index: 500;
+}
+
+.scroll-top-btn:hover {
+    background: #333;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Hide on very small scroll up */
+.scroll-top-btn.ng-animating,
+.scroll-top-btn.ng-leave {
+    opacity: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .scroll-top-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        bottom: 35px;
+        right: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scroll-top-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+        bottom: 30px;
+        right: 10px;
+    }
+}

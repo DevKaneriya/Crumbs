@@ -1,0 +1,35 @@
+<app-header></app-header>
+
+<div class="main">
+
+    <div *ngIf="!auth.isLoggedIn()" class="login">
+        <div class="header">Register</div>
+        <div class="content">
+            Please fill in the form below to create an account.
+        </div>
+        <form (ngSubmit)="register()">
+
+            <input [(ngModel)]="name" name="name" placeholder="Name">
+
+            <input [(ngModel)]="email" name="email" placeholder="Email">
+
+            <input [(ngModel)]="password" name="password" type="password" placeholder="Password">
+
+            <button class="submit" type="submit">Create Account</button>
+
+            <div class="register">
+                Already have an account? <a href="/account/login"> Login</a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div *ngIf="auth.isLoggedIn()">
+
+    </div>
+
+</div>
+
+
+<app-footer></app-footer>

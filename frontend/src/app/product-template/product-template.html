@@ -1,0 +1,8 @@
+<div class="category-slider-wrapper">
+  <div class="category-slider">
+    <a class="category-item" (click)="navigate(cat.route)" *ngFor="let cat of categories">
+      <img [src]="cat.icon" class="category-img" alt="{{cat.text}}" />
+      <p class="category-text">{{cat.text}}</p>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+.bgclr {
+  background-color: rgb(247, 247, 241);
+}
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+}
+.breadcrumb a {
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+}
+.breadcrumb .active {
+  font-weight: bold;
+  color: #3b1f1f;
+}
+.policy-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 3rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #3e2f2f;
+  line-height: 1.7;
+}
+
+.policy-container h3 {
+  margin-top: 2.5rem;
+  font-size: 1.3rem;
+  color: #3b1f1f;
+  font-weight: bold;
+}
+
+.policy-container p {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+}
+
+.policy-container ol {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.policy-container li {
+  margin: 0.3rem 0;
+}

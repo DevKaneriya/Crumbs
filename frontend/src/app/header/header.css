@@ -1,0 +1,274 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fdfaf3;
+}
+
+.offer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(75, 149, 75);
+  color: var(--background-color);
+  height: max-content;
+  font-size: var(--link);
+  font-weight: var(--link-weight);
+  padding: 10px 25px;
+}
+
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--background-color);
+
+  z-index: 1001;
+  height: 80px;
+}
+
+.mobile-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--background-color);
+  position: relative;
+  z-index: 1001;
+  height: 80px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 22px;
+  color: #3c1f2e;
+}
+
+.logo img {
+  width: 170px;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+}
+
+.nav-icons i {
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+  color: #3c1f2e;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  width: 28px;
+  height: 24px;
+  z-index: 500;
+}
+
+.menu-toggle .bar {
+  width: 100%;
+  height: 3px;
+  background-color: #3c1f2e;
+  transition: all 0.3s ease;
+}
+
+
+.menu-toggle .bar.change:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle .bar.change:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle .bar.change:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100vh;
+  background: var(--background-color);
+  /* box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2); */
+  transition: left 0.3s ease-in-out;
+  z-index: 2000;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 30px;
+}
+
+.mobile-menu.active {
+  left: 0;
+}
+
+.mobile-menu a {
+  text-decoration: none;
+  color: #3c1f2e;
+  font-size: 20px;
+  margin: 15px 0;
+  transition: color 0.2s;
+}
+
+.mobile-menu a:hover {
+  color: #d32f2f;
+}
+
+
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 400px;
+  height: 100vh;
+  background: var(--background-color);
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s ease-in-out;
+  z-index: 5001;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px 0 0 20px;
+}
+
+.cart-sidebar.active {
+  right: 0;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 0.5px solid rgb(208, 207, 207);
+  font-weight: bold;
+  height: 10vh;
+}
+
+.close-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.app-cart{
+  height: 100%;
+  width: 100%;
+}
+
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: absolute;
+  bottom: 10%;
+}
+
+.wrap {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.wrap i {
+  font-size: 20px;
+}
+
+#diff {
+  font-size: 20px;
+  font-family: var(--content-font);
+}
+
+
+
+/* Responsive */
+@media (max-width: 483px) {
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  #hide {
+    display: none;
+  }
+
+  .logo img {
+    width: 130px;
+  }
+
+  .cart-sidebar {
+    width: 100%;
+    border-radius: 0;
+  }
+
+}
+
+@media (min-width: 483px) and (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  #hide {
+    display: none;
+  }
+
+  .mobile-menu {
+    top: 0;
+    height: 100vh;
+  }
+
+  .logo img {
+    width: 140px;
+  }
+
+  .cart-sidebar {
+    width: 100%;
+    border-radius: 0;
+  }
+
+}

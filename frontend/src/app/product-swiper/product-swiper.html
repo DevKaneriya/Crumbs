@@ -1,0 +1,44 @@
+<div class="header">
+  Our Top Picks
+</div>
+
+<div class="slickSlider">
+  <div class="product-carousel" style="max-width: 100%">
+
+    <div class="card_carousel products " *ngFor=" let product of products" (click)="navigate(product.short)">
+      <div class="product-card">
+
+        <div class="image-container">
+
+          <img src={{product.image[0]}} class="img default" />
+          <img src={{product.image[1]}} class="img hover" />
+
+          <button class="wishlist-btn" (click)="toggleWishlist(product, $event)">
+            <i class="fas fa-heart" [class.active]="wishlistService.isInWishlist(product.id)"></i>
+          </button>
+
+        </div>
+        <div class="name">
+          {{product.name}}
+        </div>
+        <div class="price">
+          <div class="discount">
+            From Rs. {{product.price[0].discounted | number:'1.2-2' }}
+          </div>
+          <div class="original">
+            Rs. {{product.price[0].original | number:'1.2-2'}}
+          </div>
+        </div>
+        <button class="cart-button">
+          ADD TO CART
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <button id="SliderArrowL" class="slider-arrow left">&#10094;</button>
+  <button id="SliderArrowR" class="slider-arrow right">&#10095;</button>
+
+</div>

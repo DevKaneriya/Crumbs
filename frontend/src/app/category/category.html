@@ -1,0 +1,14 @@
+<div class="main">
+
+        <div class="header">Find Your Favorites</div>
+
+        <div class="category-slider">
+            <div class="category-item" *ngFor="let item of selectedCategory" (click)="navigate(item.route)" >
+                <div class="category-box shadow-sm overflow-hidden">
+                    <img [src]="item.image" alt="{{item.name}}" class="img-fluid w-100" />
+                </div>
+                <div class="name pt-3">{{ item.name }}</div>
+            </div>
+        </div>
+
+</div>

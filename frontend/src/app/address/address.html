@@ -1,0 +1,158 @@
+<app-header></app-header>
+
+
+<div class="main">
+    <div class="header">
+        Manage Addresses
+    </div>
+    <div class="body">
+        <div class="left">
+            <ul>
+                <li>
+                    <a href="/account">My Orders</a>
+                </li>
+                <li>
+                    <a href="/account/address">Address</a>
+                </li>
+                <li>
+                    <a href="/wishlist">Wishlist</a>
+                </li>
+                <li>
+                    <button class="logout" (click)="logout()">Log Out</button>
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+
+            <div class="address">
+
+                <button class="add-new" (click)="toggleAdd()" *ngIf="!addMode">ADD NEW ADDRESS</button>
+
+                <div *ngIf="addMode" [formGroup]="addressForm" class="form-card animate-popup">
+
+                    <div class="form-header">
+                        Add New Address
+                    </div>
+
+                    <div class="fl">
+                        <label>First Name
+                            <input formControlName="first_name" placeholder="First Name">
+                        </label>
+                        <label>Last Name
+                            <input formControlName="last_name" placeholder="Last Name">
+                        </label>
+                    </div>
+                    <label>Address
+                        <input formControlName="address" placeholder="Address">
+                    </label>
+                    <label>Apartment, suite, etc.
+                        <input formControlName="apartment" placeholder="Apartment, suite, etc.">
+                    </label>
+                    <label>City
+                        <input formControlName="city" placeholder="City">
+                    </label>
+                    <label>Province
+                        <input formControlName="state" placeholder="State">
+                    </label>
+                    <div class="fl">
+                        <label>Pin Code
+                            <input formControlName="pin_code" placeholder="Pin Code">
+                        </label>
+                        <label>Phone No
+                            <input formControlName="phone_no" placeholder="Phone No">
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <input id="checkbox" type="checkbox" formControlName="is_default">
+                        <label>Set as default</label>
+                    </div>
+
+                    <div class="form-button">
+                        <button (click)="saveNew()">Save</button>
+                        <button (click)="toggleAdd()">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="new-overlay" *ngIf="addMode" (click)="toggleAdd()"></div>
+
+
+                <div class="wrapper">
+                    <div class="width" *ngFor="let addr of addresses; let i = index">
+
+                        <div class="add-card" *ngIf="editIndex !== i">
+                            <span class="default" *ngIf="addr.is_default"> Default</span>
+                            <div class="card-head">
+                                {{addr.first_name}} {{addr.last_name}}
+
+                            </div>
+                            <div class="card-body">
+                                <div>{{addr.address}} {{addr.apartment}}
+                                    {{addr.city}}, {{addr.state}} - {{addr.pin_code}}</div>
+                                <div>Phone: {{addr.phone_no}}</div>
+                            </div>
+
+
+                            <div class="button">
+                                <button (click)="editAddress(i)">EDIT</button>
+                                <button (click)="deleteAddress(addr.id!)">DELETE</button>
+                            </div>
+                        </div>
+
+
+                        <div *ngIf="editIndex === i" [formGroup]="addressForm" class="form-card animate-popup">
+
+                            <div class="form-header">
+                                Edit Address
+                            </div>
+
+                            <div class="fl">
+                                <label>First Name
+                                    <input formControlName="first_name" placeholder="First Name">
+                                </label>
+                                <label>Last Name
+                                    <input formControlName="last_name" placeholder="Last Name">
+                                </label>
+                            </div>
+                            <label>Address
+                                <input formControlName="address" placeholder="Address">
+                            </label>
+                            <label>Apartment, suite, etc.
+                                <input formControlName="apartment" placeholder="Apartment, suite, etc.">
+                            </label>
+                            <label>City
+                                <input formControlName="city" placeholder="City">
+                            </label>
+                            <label>Province
+                                <input formControlName="state" placeholder="State">
+                            </label>
+                            <div class="fl">
+                                <label>Pin Code
+                                    <input formControlName="pin_code" placeholder="Pin Code">
+                                </label>
+                                <label>Phone No
+                                    <input formControlName="phone_no" placeholder="Phone No">
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <input id="checkbox" type="checkbox" formControlName="is_default">
+                                <label>Set as default</label>
+                            </div>
+                            <div class="form-button">
+                                <button (click)="updateAddress(addr.id!)">Update</button>
+                                <button (click)="cancelEdit()">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="edit-overlay" *ngIf="editIndex === i" (click)="cancelEdit()"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<app-footer></app-footer>

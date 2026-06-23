@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--body-font);
+}
+
+p {
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+}
+
+
+.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+}
+
+
+:root {
+    --header: 42px;
+    --header-weight: 700;
+    --content: 18px;
+    --content-weight: 400;
+    --sub-header: 22px;
+    --sub-header-weight: 500;
+    --button: 18px;
+    --link: 16px;
+    --link-weight: 400;
+    --padding: 60px 50px;
+    --gap: 30px;
+    --background-color: rgb(247, 236, 231); /* rgba(255, 251, 243, 1) */
+    --orange: #F4A019;
+    --head-font: 'Montserrat', sans-serif;
+    --head-color: black;
+    --body-font: 'Inter', sans-serif;
+}
+
+
+@media(max-width: 768px) {
+
+    :root {
+        --header: 25px;
+        --header-weight: 600;
+        --content: 14px;
+        --content-weight: 400;
+        --sub-header: 21px;
+        --sub-header-weight: 700;
+        --button: 13px;
+        --link: 14px;
+        --link-weight: 400;
+        --padding: 40px 25px;
+
+    }
+
+}
+
+@media(max-width: 1024px) {
+
+    :root {
+        --padding: 40px 25px;
+    }
+
+}

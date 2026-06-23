@@ -1,0 +1,37 @@
+<app-header></app-header>
+
+<div class="main">
+
+  <div *ngIf="!auth.isLoggedIn()" class="login">
+    <div class="header">Login</div>
+    <div class="content">
+      Please enter your email and password to log in.
+    </div>
+    <form (ngSubmit)="login()">
+
+      <input [(ngModel)]="email" name="email" placeholder="Email">
+
+      <input [(ngModel)]="password" name="password" type="password" placeholder="Password">
+
+      <a href="" class="forgot">Forgot Your Password?</a>
+
+      <button class="submit" type="submit">Sign In</button>
+
+      <div class="register">
+      New customer? <a href="/account/register"> Create an account  </a>
+    </div>
+
+    </form>
+    
+  </div>
+
+  <div *ngIf="auth.isLoggedIn()">
+    <h2>Welcome!</h2>
+    <button (click)="getUser()">Get User</button>
+    <button (click)="logout()">Logout</button>
+  </div>
+
+</div>
+
+
+<app-footer></app-footer>

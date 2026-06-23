@@ -1,0 +1,72 @@
+.hero-img {
+  height: 70vh;
+  object-fit: cover;
+}
+
+.carousel-item {
+  position: relative;
+}
+
+#slide{
+  background-color: pink;
+  border-radius: 20px;
+  padding: 20px 20px;
+}
+
+.combo {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  bottom: 15%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.combo button {
+  background-color: rgb(199, 55, 103);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 11px;
+  font-size: var(--link);
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Trigger animation when slide becomes active */
+.carousel-item.active .combo button {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+
+@media (max-width: 768px) {
+
+  .hero-img {
+    height: 50vh;
+    object-fit: cover;
+  }
+
+  .carousel-control-prev{
+    display: none;
+  }
+
+  .carousel-control-next{
+    display: none;
+  }
+
+}

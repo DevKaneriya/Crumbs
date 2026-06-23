@@ -1,0 +1,35 @@
+<div class="main">
+
+    <app-header></app-header>
+    <app-product-template></app-product-template>
+    <app-hero-page></app-hero-page>
+    <app-marque></app-marque>
+    <app-product-swiper></app-product-swiper>
+    <app-why-choose-us></app-why-choose-us>
+    <app-specially-curated></app-specially-curated>
+    <app-category></app-category>
+    <app-feedback></app-feedback>
+
+    <div class="blogs">
+
+        <div class="header">
+            Latest Articles
+        </div>
+
+        <div class="cards">
+            <div class="card-data" *ngFor=" let blog of blogs" (click)="navigate(blog.route)">
+                <div class="image-container">
+                    <img src={{blog.img}} />
+                </div>
+                <div class="title">
+                    {{blog.title}}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <app-marque></app-marque>
+    <app-footer></app-footer>
+
+</div>

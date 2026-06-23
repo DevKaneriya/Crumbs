@@ -1,0 +1,70 @@
+<div class="main">
+    @if (cartItems.length === 0){
+    <div class="empty">
+        <p>Your cart is currently empty.</p>
+        <button (click)="navigate('collections/all-products')" class="empty-button">
+            Continue Shopping
+        </button>
+    </div>
+    }
+    @else {
+    <div class="non-empty" *ngIf="cartItems.length > 0">
+        <div class="cart-scroll">
+            <div class="card" *ngFor="let item of cartItems">
+                
+
+                <div class="card-wrapper">
+                    <img (click)="navigate('/products',item.route)" [src]="item.image" alt="product">
+                    <div class="details">
+                        <div (click)="navigate('/products',item.route)" class="name">{{ item.name }}</div>
+                        <div class="variant">Size: {{ item.variant }}</div>
+                        
+
+                        <div class="flex">
+
+                            <div class="quantity">
+                                <button (click)="decreaseQty(item)" [disabled]="item.quantity <= 1">-</button>
+                                <span>{{ item.quantity }}</span>
+                                <button (click)="increaseQty(item)">+</button>
+                            </div>
+                            <div class="prices">
+                                <div class="original">
+                                    Rs.{{item.actualsubtotal}}
+                                </div>
+                                <div class="discounted">
+                                    Rs.{{item.subtotal}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <svg (click)="removeItem(item)" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                        fill="currentColor" viewBox="0 0 256 256" class="h-4 w-4 text-coal-light outline-none"
+                        stroke-width="2.5">
+                        <path
+                            d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z">
+                        </path>
+                    </svg>
+
+
+                </div>
+
+            </div>
+        </div>
+        <div class="checkout">
+            <div class="total">
+                <span class="total-head">Net Total</span>
+                <span class="total-amount">Rs.{{ totalAmount }}</span>
+            </div>
+            <button (click)="navigate('checkout')" class="checkout-button">
+                <span>Proceed to Checkout</span>
+                <span class="payment"><img src="https://cdn.gokwik.co/v4/images/upi-icons.svg"></span>
+                <span><img src="https://cdn.gokwik.co/v4/images/right-arrow.svg"></span>
+            </button>
+        </div>
+
+    </div>
+    }
+</div>

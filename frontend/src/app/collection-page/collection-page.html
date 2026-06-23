@@ -1,0 +1,18 @@
+<app-header></app-header>
+
+<div class="main">
+    <div class=" w-100 text-center">
+        <div class="header mb-4">Shop By Category</div>
+
+        <div class="category-slider">
+            <div class="category-item" *ngFor="let item of categories">
+                <div class="category-box shadow-sm overflow-hidden">
+                    <img [src]="item.image" alt="{{item.name}}" class="img-fluid w-100" />
+                </div>
+                <div class="name pt-3">{{ item.name }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>

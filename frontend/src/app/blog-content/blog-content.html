@@ -1,0 +1,53 @@
+<app-header></app-header>
+
+<div class="main">
+
+    <div class="header">
+        {{filterredBlog.title}}
+    </div>
+
+    <div class="blog-image">
+        <img class="" src={{filterredBlog.img}} />
+    </div>
+
+    <section>
+
+        <div class="part" *ngFor="let part of filterredBlog.parts">
+            <div class="sub-header" *ngIf="part.subHeader">
+                {{ part.subHeader }}
+            </div>
+
+            <div class="content">
+                <ng-container *ngFor="let item of part.content">
+                    
+                    <p *ngIf="!item.list" [innerHTML]="item"></p>
+
+                    <ul *ngIf="item.list">
+                        <li *ngFor="let li of item.list" [innerHTML]="li"></li>
+                    </ul>
+                </ng-container>
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="header">
+        Explore More
+    </div>
+
+    <div class="cards">
+        <div class="card-data" *ngFor=" let blog of blogs" (click)="navigate(blog.route)">
+            <div class="image-container">
+                <img src={{blog.img}} />
+            </div>
+            <div class="title">
+                {{blog.title}}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<app-footer></app-footer>

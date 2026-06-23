@@ -1,0 +1,115 @@
+<div class="header-main" [ngClass]="{'no-scroll': isMenuOpen}">
+  <div class="offer">
+    Our Biggest Deal! Get extra FLAT 25% off 1599+ (GET25), FLAT 15% off 999+ (GET15), FLAT 10% off 599+ (GET10), Free
+    shipping 599+
+  </div>
+  <div class="navbar" *ngIf="!isMenuOpen">
+
+    <div class="menu-toggle" (click)="toggleMenu()">
+      <div class="bar" [class.change]="isMenuOpen"></div>
+      <div class="bar" [class.change]="isMenuOpen"></div>
+      <div class="bar" [class.change]="isMenuOpen"></div>
+    </div>
+
+
+    <a href="" class="logo">
+      <img src="assets/logo.png" alt="">
+    </a>
+
+
+    <div class="nav-icons">
+
+      <i class="fas fa-search" (click)="openSearch()"></i>
+
+      <i id="hide" class="fas fa-user" (click)="navigate('/account')"></i>
+
+      <i id="hide" class="fas fa-heart" (click)="navigate('/wishlist')">
+        <span class="badge" *ngIf="wishlistService.wishlistCount() > 0">{{wishlistService.wishlistCount()}}</span>
+      </i>
+
+      <i class="fas fa-shopping-bag" (click)="toggleCart()">
+        <span class="badge" *ngIf="cartService.cartCount() > 0">{{cartService.cartCount()}}</span>
+      </i>
+
+
+      <div class="cart-sidebar" [class.active]="cartService.isCartOpen()">
+        <div class="cart-header">
+          <h3>Your Cart</h3>
+          <button class="close-btn" (click)="closeCart()">✕</button>
+        </div>
+        <div class="app-cart">
+          <app-cart></app-cart>
+        </div>
+      </div>
+
+      <div class="cart-overlay" *ngIf="cartService.isCartOpen()" (click)="closeCart()"></div>
+
+
+    </div>
+  </div>
+  <!-- <div class="cart-overlay" *ngIf="isMenuOpen" (click)="toggleMenu()"></div> -->
+</div>
+
+<div class="mobile-menu" [class.active]="isMenuOpen">
+
+  <div class="mobile-navbar">
+    <div class="menu-toggle" (click)="toggleMenu()">
+      <div class="bar" [class.change]="isMenuOpen"></div>
+      <div class="bar" [class.change]="isMenuOpen"></div>
+      <div class="bar" [class.change]="isMenuOpen"></div>
+    </div>
+
+    <a href="" class="logo">
+      <img src="assets/logo.png" alt="">
+    </a>
+
+    <div class="nav-icons">
+
+      <i class="fas fa-search" (click)="openSearch()"></i>
+
+      <i class="fas fa-shopping-bag" (click)="toggleCart()"></i>
+
+
+      <!-- <div class="cart-sidebar" [class.active]="isCartOpen">
+          <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-btn" (click)="closeCart()">✕</button>
+          </div>
+          <div class="cart-content">
+            <p>No items yet!</p>
+          </div>
+        </div>
+
+        <div class="cart-overlay" *ngIf="isCartOpen" (click)="closeCart()"></div> -->
+
+    </div>
+
+  </div>
+
+  <div class="nav-links">
+
+    <a routerLink="/">Home</a>
+    <a routerLink="/shop">Shop</a>
+    <a routerLink="/about">About</a>
+    <a routerLink="/contact">Contact</a>
+
+    <div class="bottom">
+
+      <div class="wrap" (click)="navigate('/account')">
+        <i class="fas fa-user"></i>
+        <span id="diff">My Account</span>
+      </div>
+
+      <div class="wrap" (click)="navigate('/wishlist')">
+        <i class="fas fa-heart"></i>
+        <span id="diff">Wishlist</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<app-search-small *ngIf="search.isOpen()"></app-search-small>

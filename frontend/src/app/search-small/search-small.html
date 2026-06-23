@@ -1,0 +1,75 @@
+<div class="main">
+    <div class="top">
+        <div class="search-top">
+            <input type="text" class="search-input" placeholder="Search products" [value]="state.query()"
+                (input)="onInput($event)" autofocus />  
+            <button class="x" (click)="close()" aria-label="Close">✕</button>
+        </div>
+
+
+        <div class="results-dropdown" *ngIf="state.query().trim().length > 0">
+
+
+            <ng-container *ngIf="state.resultsFor(state.query()).suggestions.length > 0 
+                      || state.resultsFor(state.query()).categories.length > 0 
+                      || state.resultsFor(state.query()).products.length > 0; else noResults">
+
+                <div class="results-grid">
+
+                    <div class="results-left">
+                        <div (click)="$event.stopPropagation()">
+                            <div class="sub-header" *ngIf="state.resultsFor(state.query()).suggestions.length > 0">
+                                Suggestions</div>
+                            <ul>
+                                <li *ngFor="let s of state.resultsFor(state.query()).suggestions.slice(0,4)"
+                                    (click)="set(s)">
+                                    {{ s }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="sub-header" *ngIf="state.resultsFor(state.query()).categories.length > 0">
+                                Collections</div>
+                            <ul>
+                                <li *ngFor="let c of state.resultsFor(state.query()).categories.slice(0,3)"
+                                    (click)="navCol(c.route)">
+                                    {{ c.name }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div class="results-right">
+                        <div class="sub-header" *ngIf="state.resultsFor(state.query()).products.length > 0">Products
+                        </div>
+                        <div class="product-card" *ngFor="let p of state.resultsFor(state.query()).products.slice(0,4)"
+                            (click)="navPro(p.short)">
+                            <img [src]="p.image[0]" alt="{{p.name}}" />
+                            <div class="flex">
+                                <div class="name">{{ p.name }}</div>
+                                <div class="price">Rs. {{ p.price[0].discounted }} <span class="old">Rs. {{
+                                        p.price[0].original
+                                        }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </ng-container>
+
+            <ng-template #noResults>
+                <div class="no-results">
+                    No results found for "<strong>{{ state.query() }}</strong>"
+                </div>
+            </ng-template>
+
+        </div>
+
+    </div>
+
+    <div class="search-overlay" (click)="close()"></div>
+
+
+</div>

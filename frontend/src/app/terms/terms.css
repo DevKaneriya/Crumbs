@@ -1,0 +1,56 @@
+.main {
+  background-color: var(--background-color);
+  padding: var(--padding);
+}
+
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  font-size: var(--header);
+  font-weight: var(--header-weight);
+  text-align: center;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.breadcrumb .active {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.terms-container {
+  max-width: 900px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.7;
+}
+
+.terms-container h3 {
+  margin-top: 2.5rem;
+  font-size: var(--sub-header);
+  font-weight: bold;
+}
+
+.terms-container p {
+  margin-top: 0.75rem;
+  font-size: var(--content);
+  font-weight: var(--content-weight);
+}
+
+.terms-container ol {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.terms-container li {
+  margin: 0.3rem 0;
+  font-size: var(--content - 2px);
+  font-weight: var(--content-weight);
+}
