@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+﻿import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Wishlistservice } from '../../services/wishlistservice';
 import { Searchservice } from '../../services/searchservice';
 import { SearchSmall } from '../search-small/search-small';
@@ -10,7 +10,7 @@ import { Cart } from "../cart/cart";
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, SearchSmall, Cart],
+  imports: [CommonModule, RouterLink, SearchSmall, Cart],
   templateUrl: './header.html',
   styleUrls: ['./header.css']
 })

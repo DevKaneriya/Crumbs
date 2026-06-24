@@ -1,4 +1,4 @@
-<app-header></app-header>
+﻿<app-header></app-header>
 
 
 <div class="main">
@@ -18,9 +18,12 @@
                     <a href="/wishlist">Wishlist</a>
                 </li>
                 <li>
-                    <button class="logout" (click)="logout()" >Log Out</button>
+                    <button class="logout" (click)="logout()" [disabled]="isLoggingOut">
+                        {{ isLoggingOut ? 'Logging Out...' : 'Log Out' }}
+                    </button>
                 </li>
             </ul>
+            <div *ngIf="logoutError" class="error">{{ logoutError }}</div>
        </div>
        <div class="right">
 

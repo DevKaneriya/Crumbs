@@ -13,6 +13,7 @@ import { Login } from './login/login';
 import { Register } from './register/register';
 import { Dashboard } from './dashboard/dashboard';
 import { AddressComponent } from './address/address';
+import { authGuard } from '../guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -20,12 +21,12 @@ export const routes: Routes = [
     { path: 'privacy', component: PrivacyPolicy },
     { path: 'terms', component: Terms },
 
-    { path: 'account', component: Dashboard },
-    { path: 'account/address', component: AddressComponent },
+    { path: 'account', component: Dashboard, canActivate: [authGuard] },
+    { path: 'account/address', component: AddressComponent, canActivate: [authGuard] },
     { path: 'account/login', component: Login },
     { path: 'account/register', component: Register },
 
-    { path: 'wishlist', component: WishlistPage },
+    { path: 'wishlist', component: WishlistPage, canActivate: [authGuard] },
 
     {
         path: 'blogs',

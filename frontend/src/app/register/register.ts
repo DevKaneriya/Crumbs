@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { Auth } from '../../services/auth';
 import { Footer } from "../footer/footer";
 import { Header } from "../header/header";
@@ -16,9 +16,13 @@ import { Router } from '@angular/router';
 })
 export class Register {
 
-  name = '';
+  firstName = '';
+  lastName = '';
   email = '';
   password = '';
+  isSubmitting = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
     public auth: Auth,
@@ -26,13 +30,24 @@ export class Register {
   ) { }
 
   register() {
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
     this.auth.register({
-      name: this.name,
+      first_name: this.firstName,
+      last_name: this.lastName,
       email: this.email,
       password: this.password
-    }).subscribe(res => {
-      console.log('Registered:', res);
-      this.router.navigate(['/']);
+    }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.successMessage = 'Account created successfully. Redirecting to your account...';
+        this.router.navigate(['/account'], { replaceUrl: true });
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.errorMessage = 'Registration failed. Please check your details and try again.';
+      }
     });
   }
 

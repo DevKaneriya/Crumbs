@@ -1,4 +1,4 @@
-<div class="header-main" [ngClass]="{'no-scroll': isMenuOpen}">
+﻿<div class="header-main" [ngClass]="{'no-scroll': isMenuOpen}">
   <div class="offer">
     Our Biggest Deal! Get extra FLAT 25% off 1599+ (GET25), FLAT 15% off 999+ (GET15), FLAT 10% off 599+ (GET10), Free
     shipping 599+
@@ -12,7 +12,7 @@
     </div>
 
 
-    <a href="" class="logo">
+    <a routerLink="/" class="logo">
       <img src="assets/logo.png" alt="">
     </a>
 
@@ -35,7 +35,7 @@
       <div class="cart-sidebar" [class.active]="cartService.isCartOpen()">
         <div class="cart-header">
           <h3>Your Cart</h3>
-          <button class="close-btn" (click)="closeCart()">✕</button>
+          <button class="close-btn" (click)="closeCart()">âœ•</button>
         </div>
         <div class="app-cart">
           <app-cart></app-cart>
@@ -59,7 +59,7 @@
       <div class="bar" [class.change]="isMenuOpen"></div>
     </div>
 
-    <a href="" class="logo">
+    <a routerLink="/" class="logo">
       <img src="assets/logo.png" alt="">
     </a>
 
@@ -73,7 +73,7 @@
       <!-- <div class="cart-sidebar" [class.active]="isCartOpen">
           <div class="cart-header">
             <h3>Your Cart</h3>
-            <button class="close-btn" (click)="closeCart()">✕</button>
+            <button class="close-btn" (click)="closeCart()">âœ•</button>
           </div>
           <div class="cart-content">
             <p>No items yet!</p>
