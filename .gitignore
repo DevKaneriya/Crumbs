@@ -7,6 +7,12 @@ __pycache__/
 db.sqlite3
 *.sqlite3
 
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.env
+
 # Logs
 *.log
 
@@ -21,3 +27,14 @@ frontend/.firebase/
 Thumbs.db
 .idea/
 .vscode/
+
+# Media and static files (production)
+backend/media/
+backend/staticfiles/
+backend/static/
+
+# Backup files
+*.bak
+*.swp
+*.swo
+*~

@@ -13,6 +13,8 @@ import { Login } from './login/login';
 import { Register } from './register/register';
 import { Dashboard } from './dashboard/dashboard';
 import { AddressComponent } from './address/address';
+import { ForgotPassword } from './forgot-password/forgot-password';
+import { ResetPassword } from './reset-password/reset-password';
 import { authGuard } from '../guards/auth.guard';
 
 export const routes: Routes = [
@@ -25,6 +27,8 @@ export const routes: Routes = [
     { path: 'account/address', component: AddressComponent, canActivate: [authGuard] },
     { path: 'account/login', component: Login },
     { path: 'account/register', component: Register },
+    { path: 'account/forgot-password', component: ForgotPassword },
+    { path: 'account/reset-password', component: ResetPassword },
 
     { path: 'wishlist', component: WishlistPage, canActivate: [authGuard] },
 

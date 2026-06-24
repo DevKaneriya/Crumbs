@@ -13,7 +13,7 @@
 
       <input [(ngModel)]="password" name="password" type="password" placeholder="Password">
 
-      <a href="" class="forgot">Forgot Your Password?</a>
+      <a routerLink="/account/forgot-password" class="forgot">Forgot Your Password?</a>
 
       <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
       <div *ngIf="successMessage" class="success">{{ successMessage }}</div>

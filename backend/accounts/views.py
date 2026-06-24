@@ -1,7 +1,14 @@
 ﻿from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,7 +16,16 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import CookieTokenRefreshSerializer, LoginSerializer, RegisterSerializer
+from .serializers import (
+    CookieTokenRefreshSerializer,
+    LoginSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
+    RegisterSerializer,
+)
+
+User = get_user_model()
+
 
 
 def _set_auth_cookies(response, access_token, refresh_token=None):
@@ -166,3 +182,101 @@ class SessionView(APIView):
             status=status.HTTP_200_OK,
         )
 
+
+
+class PasswordResetRequestView(APIView):
+    """
+    Request a password reset. Sends an email with reset link.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        email = serializer.validated_data['email']
+        user = User.objects.filter(
+            Q(username__iexact=email) | Q(email__iexact=email)
+        ).first()
+
+        # Always return success to prevent email enumeration
+        if user and user.email:
+            # Generate password reset token
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            # Ensure uid is a string
+            uid_str = uid.decode() if isinstance(uid, bytes) else uid
+            
+            # Build reset URL - DON'T use urlencode for email links
+            # The browser will handle the URL parameters correctly
+            reset_url = f"{settings.FRONTEND_URL}/account/reset-password?uid={uid_str}&token={token}"
+            
+            # Print to console for easy copying during development
+            print(f"\n{'='*60}")
+            print(f"PASSWORD RESET LINK FOR: {user.email}")
+            print(f"{'='*60}")
+            print(f"{reset_url}")
+            print(f"{'='*60}\n")
+            
+            # Send email - use plain text without special formatting
+            subject = 'Password Reset Request'
+            message = f"""Hello {user.first_name or user.username},
+
+You requested a password reset for your Crumbs account.
+
+Click the link below to reset your password:
+{reset_url}
+
+This link will expire in 1 hour.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+The Crumbs Team"""
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Log the error but don't reveal it to the user
+                print(f"Error sending password reset email: {e}")
+
+        return Response(
+            {
+                'message': 'If an account exists with this email, you will receive a password reset link shortly.'
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    Confirm password reset with token and set new password.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = serializer.save()
+            
+            return Response(
+                {
+                    'message': 'Password has been reset successfully. You can now login with your new password.'
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {'error': 'An error occurred while resetting your password.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

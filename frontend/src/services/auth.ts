@@ -108,6 +108,22 @@ export class Auth {
     );
   }
 
+  requestPasswordReset(email: string) {
+    return this.http.post<{ message: string }>(
+      `${environment.apiUrl}/accounts/password-reset/`,
+      { email },
+      { withCredentials: true }
+    );
+  }
+
+  confirmPasswordReset(uid: string, token: string, new_password: string) {
+    return this.http.post<{ message: string }>(
+      `${environment.apiUrl}/accounts/password-reset-confirm/`,
+      { uid, token, new_password },
+      { withCredentials: true }
+    );
+  }
+
   user() {
     const currentUser = this.currentUserSubject.value;
     if (currentUser) {

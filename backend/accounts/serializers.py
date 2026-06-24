@@ -1,7 +1,10 @@
 ﻿from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -79,3 +82,48 @@ class LoginSerializer(serializers.Serializer):
 
 class CookieTokenRefreshSerializer(TokenRefreshSerializer):
     pass
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        return value.lower().strip()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+    def validate(self, attrs):
+        try:
+            # Decode the UID - handle potential padding issues
+            uid_str = attrs['uid']
+            
+            # Add padding if necessary
+            missing_padding = len(uid_str) % 4
+            if missing_padding:
+                uid_str += '=' * (4 - missing_padding)
+            
+            uid = urlsafe_base64_decode(uid_str).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError) as e:
+            raise ValidationError({'uid': ['Invalid user ID.']})
+        except User.DoesNotExist:
+            raise ValidationError({'uid': ['Invalid user ID.']})
+
+        # Check the token
+        if not default_token_generator.check_token(user, attrs['token']):
+            raise ValidationError({'token': ['Invalid or expired token.']})
+
+        attrs['user'] = user
+        return attrs
+
+    def save(self):
+        user = self.validated_data['user']
+        new_password = self.validated_data['new_password']
+        user.set_password(new_password)
+        user.save()
+        return user
+
