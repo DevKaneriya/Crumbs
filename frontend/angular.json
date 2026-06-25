@@ -22,11 +22,6 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "src/Jsonfile",
-                "output": "/Jsonfile/"
-              },
-              {
-                "glob": "**/*",
                 "input": "public"
               }
             ],

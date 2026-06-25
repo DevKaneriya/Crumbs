@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
 import { CommonModule } from '@angular/common';
-import * as categories from '../../Jsonfile/categories.json'
+import { CatalogService } from '../../services/catalog.service';
+import { Category } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-collection-page',
@@ -11,8 +12,19 @@ import * as categories from '../../Jsonfile/categories.json'
   templateUrl: './collection-page.html',
   styleUrl: './collection-page.css'
 })
-export class CollectionPage {
+export class CollectionPage implements OnInit {
 
-  categories:any = (categories as any).default.categories;
+  categories: Category[] = [];
+
+  constructor(private catalogService: CatalogService) { }
+
+  ngOnInit() {
+    this.catalogService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (err) => console.error('Error loading categories:', err)
+    });
+  }
 
 }

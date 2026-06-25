@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as productsData from '../../Jsonfile/product.json';
 import { Router } from '@angular/router';
 import { Wishlistservice } from '../../services/wishlistservice';
-
+import { CatalogService } from '../../services/catalog.service';
+import { ProductList } from '../../models/catalog.models';
 
 declare const $: any;
 
@@ -14,14 +14,26 @@ declare const $: any;
   templateUrl: './product-swiper.html',
   styleUrls: ['./product-swiper.css']
 })
-export class ProductSwiper {
+export class ProductSwiper implements OnInit {
 
-  products: any = (productsData as any).default;
+  products: ProductList[] = [];
 
   constructor(
     private router: Router,
-    public wishlistService: Wishlistservice
+    public wishlistService: Wishlistservice,
+    private catalogService: CatalogService
   ) { }
+
+  ngOnInit() {
+    this.catalogService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        // Initialize carousel after products are loaded
+        setTimeout(() => this.initializeCarousel(), 100);
+      },
+      error: (err) => console.error('Error loading products:', err)
+    });
+  }
 
   navigate(slug: string) {
 
@@ -45,46 +57,47 @@ export class ProductSwiper {
   isDragging = false;
   mobileBreakpoint = 1025;
 
+  private initializeCarousel() {
+    $(".product-carousel").slick({
+      dots: false,
+      arrows: false,
+      infinite: true,
+      slidesToScroll: 1,
+      slidesToShow: 3,
+      accessibility: true,
+      variableWidth: true,
+      focusOnSelect: false,
+      centerMode: false,
+      autoplay: true,
+      autoplaySpeed: 3000,
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false },
+        },
+        {
+          breakpoint: 767,
+          settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
+        },
+        {
+          breakpoint: 576,
+          settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
+        },
+      ],
+    });
+
+    if (window.innerWidth > this.mobileBreakpoint) {
+
+      $(".product-carousel").on("mousedown touchstart", () => this.isDragging = false);
+      $(".product-carousel").on("mousemove touchmove", () => this.isDragging = true);
+    }
+
+    $("#SliderArrowL").on("click", () => $(".product-carousel").slick("slickPrev"));
+    $("#SliderArrowR").on("click", () => $(".product-carousel").slick("slickNext"));
+  }
+
   ngAfterViewInit() {
-    setTimeout(() => {
-      $(".product-carousel").slick({
-        dots: false,
-        arrows: false,
-        infinite: true,
-        slidesToScroll: 1,
-        slidesToShow: 3,
-        accessibility: true,
-        variableWidth: true,
-        focusOnSelect: false,
-        centerMode: false,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        responsive: [
-          {
-            breakpoint: 1200,
-            settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false },
-          },
-          {
-            breakpoint: 767,
-            settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
-          },
-          {
-            breakpoint: 576,
-            settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
-          },
-        ],
-      });
-
-      if (window.innerWidth > this.mobileBreakpoint) {
-
-        $(".product-carousel").on("mousedown touchstart", () => this.isDragging = false);
-        $(".product-carousel").on("mousemove touchmove", () => this.isDragging = true);
-      }
-
-      $("#SliderArrowL").on("click", () => $(".product-carousel").slick("slickPrev"));
-      $("#SliderArrowR").on("click", () => $(".product-carousel").slick("slickNext"));
-
-    }, 500);
+    // Carousel initialization moved to ngOnInit after data loads
   }
 
 }

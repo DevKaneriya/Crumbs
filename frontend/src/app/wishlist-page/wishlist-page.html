@@ -27,8 +27,8 @@
 
             <div class="image-container">
 
-                <img src={{product.image[0]}} class="img default" />
-                <img src={{product.image[1]}} class="img hover" />
+                <img [src]="product.images[0]?.image_path" class="img default" />
+                <img [src]="product.images[1]?.image_path" class="img hover" />
 
                 <button class="wishlist-btn" (click)="toggleWishlist(product, $event)">
                     <i class="fas fa-heart" [class.active]="wishlistService.isInWishlist(product.id)"></i>
@@ -40,10 +40,10 @@
             </div>
             <div class="price">
                 <div class="discount">
-                    From Rs. {{product.price[0].discounted | number:'1.2-2'}}
+                    From Rs. {{product.variants[0].discounted_price | number:'1.2-2'}}
                 </div>
                 <div class="original">
-                    Rs. {{product.price[0].original | number:'1.2-2'}}
+                    Rs. {{product.variants[0].original_price | number:'1.2-2'}}
                 </div>
             </div>
             <button class="cart-button">

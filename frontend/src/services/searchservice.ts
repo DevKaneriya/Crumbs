@@ -1,9 +1,6 @@
 import { Injectable, signal, effect } from '@angular/core';
-import products from '../Jsonfile/product.json';
-import categoriesData from '../Jsonfile/categories.json';
-
-type Product = typeof products[number];
-type Category = (typeof categoriesData)['categories'][number];
+import { CatalogService } from './catalog.service';
+import { ProductList, Category } from '../models/catalog.models';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +11,13 @@ export class Searchservice {
   mode = signal<'small' | 'large'>('small');
   query = signal('');
 
-  private allProducts = signal<Product[]>(products as Product[]);
-  private allCategories = signal<Category[]>(categoriesData.categories as Category[]);
+  private allProducts = signal<ProductList[]>([]);
+  private allCategories = signal<Category[]>([]);
 
-  constructor() {
+  constructor(private catalogService: CatalogService) {
+    // Load products and categories from API
+    this.loadData();
+
     if (this.isBrowser()) {
       effect(() => {
         if (this.isOpen()) {
@@ -27,6 +27,18 @@ export class Searchservice {
         }
       });
     }
+  }
+
+  private loadData() {
+    this.catalogService.getProducts().subscribe({
+      next: (products) => this.allProducts.set(products),
+      error: (err) => console.error('Error loading products:', err)
+    });
+
+    this.catalogService.getCategories().subscribe({
+      next: (categories) => this.allCategories.set(categories),
+      error: (err) => console.error('Error loading categories:', err)
+    });
   }
 
   openSmall() {
@@ -52,7 +64,7 @@ export class Searchservice {
   resultsFor(query: string) {
     const q = query.trim().toLowerCase();
     if (!q) {
-      return { products: [] as Product[], categories: [] as Category[], suggestions: [] as string[] };
+      return { products: [] as ProductList[], categories: [] as Category[], suggestions: [] as string[] };
     }
 
     const prods = this.allProducts().filter(p =>

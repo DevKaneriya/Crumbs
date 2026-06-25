@@ -50,7 +50,7 @@ class Command(BaseCommand):
             created_count = 0
             updated_count = 0
 
-            for cat_data in categories_data:
+            for index, cat_data in enumerate(categories_data):
                 category, created = Category.objects.update_or_create(
                     route=cat_data['route'],
                     defaults={
@@ -59,6 +59,7 @@ class Command(BaseCommand):
                         'icon': cat_data.get('icon', ''),
                         'image': cat_data.get('image', ''),
                         'content': cat_data.get('content', ''),
+                        'display_order': cat_data.get('display_order', index),
                     }
                 )
                 if created:

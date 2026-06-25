@@ -1,21 +1,33 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router} from '@angular/router';
-import * as categories from '../../Jsonfile/categories.json';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CatalogService } from '../../services/catalog.service';
+import { Category } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-product-template',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './product-template.html',
   styleUrls: ['./product-template.css']
 })
-export class ProductTemplate {
+export class ProductTemplate implements OnInit {
 
-  categories: any = (categories as any).default.categories ;
+  categories: Category[] = [];
 
+  constructor(
+    private router: Router,
+    private catalogService: CatalogService
+  ) { }
 
-  constructor(private router: Router ) { }
+  ngOnInit() {
+    this.catalogService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (err) => console.error('Error loading categories:', err)
+    });
+  }
 
   navigate(slug: string) {
     this.router.navigate(['/collections', slug]).then(() => {

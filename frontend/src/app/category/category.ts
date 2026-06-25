@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as categories from '../../Jsonfile/categories.json'
 import { Router } from '@angular/router';
+import { CatalogService } from '../../services/catalog.service';
+import { Category as CategoryModel } from '../../models/catalog.models';
+
 @Component({
   selector: 'app-category',
   standalone: true,
@@ -9,16 +11,24 @@ import { Router } from '@angular/router';
   templateUrl: './category.html',
   styleUrl: './category.css'
 })
-export class Category {
+export class Category implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private catalogService: CatalogService
+  ) { }
 
-  categories:any = (categories as any).default.categories;
-
-  selectedCategory: any = [];
+  categories: CategoryModel[] = [];
+  selectedCategory: CategoryModel[] = [];
 
   ngOnInit() {
-    this.selectedCategory = this.categories.slice(1, 9);
+    this.catalogService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+        this.selectedCategory = this.categories.slice(1, 9);
+      },
+      error: (err) => console.error('Error loading categories:', err)
+    });
   }
 
   navigate(slug: string) {

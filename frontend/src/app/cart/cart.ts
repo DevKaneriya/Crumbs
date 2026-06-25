@@ -1,8 +1,9 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { Cartservice, CartItem } from '../../services/cartservice';
-import * as productsData from '../../Jsonfile/product.json';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { CatalogService } from '../../services/catalog.service';
+import { ProductList } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-cart',
@@ -11,15 +12,16 @@ import { Router } from '@angular/router';
   templateUrl: './cart.html',
   styleUrl: './cart.css'
 })
-export class Cart {
+export class Cart implements OnInit {
 
-  products: any = (productsData as any).default;
+  products: ProductList[] = [];
   cartItems: any[] = [];
   totalAmount: number = 0;
 
   constructor(
     public cartService: Cartservice,
     private router: Router,
+    private catalogService: CatalogService
   ) {
     effect(() => {
       this.loadCart();
@@ -27,16 +29,32 @@ export class Cart {
   }
 
   ngOnInit() {
-    this.loadCart();
+    // Load products from API
+    this.catalogService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.loadCart();
+      },
+      error: (err) => console.error('Error loading products:', err)
+    });
   }
 
   loadCart() {
     const cart: CartItem[] = this.cartService.cart();
+    
+    if (this.products.length === 0) return;
 
     this.cartItems = cart.map(item => {
-      const product = this.products.find((p: { id: string | number; }) => p.id === item.productId);
+      const product = this.products.find((p: ProductList) => p.id === item.productId);
+      
+      if (!product) return null;
 
-      const variant = product.price.find((v: any) => v.weight === item.variant);
+      const variant = product.variants.find(v => v.weight === item.variant);
+      
+      if (!variant) return null;
+
+      const discountedPrice = parseFloat(variant.discounted_price);
+      const originalPrice = parseFloat(variant.original_price);
 
       return {
         productId: item.productId,
@@ -44,15 +62,13 @@ export class Cart {
         quantity: item.quantity,
         name: product.name,
         route: product.short,
-        image: product.image[0],
-        price: variant.discounted,
-        original: variant.original,
-        actualsubtotal: variant.original * item.quantity,
-        subtotal: variant.discounted * item.quantity
+        image: product.images[0]?.image_path,
+        price: discountedPrice,
+        original: originalPrice,
+        actualsubtotal: originalPrice * item.quantity,
+        subtotal: discountedPrice * item.quantity
       };
-    });
-
-
+    }).filter(item => item !== null);
 
     this.calculateTotal();
   }
@@ -81,7 +97,7 @@ export class Cart {
     this.cartService.removeFromCart(item.productId, item.variant);
     this.loadCart();
   }
-   
+
   clearCart() {
     this.cartService.clearCart();
     this.loadCart();

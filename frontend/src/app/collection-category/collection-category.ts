@@ -5,27 +5,27 @@ import { ProductTemplate } from "../product-template/product-template";
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Wishlistservice } from '../../services/wishlistservice';
-import * as productsData from '../../Jsonfile/product.json';
-import * as categories from '../../Jsonfile/categories.json';
+import { CatalogService } from '../../services/catalog.service';
+import { ProductList, Category } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-collection-category',
   standalone: true,
-  imports: [Header, Footer, ProductTemplate, CommonModule ],
+  imports: [Header, Footer, ProductTemplate, CommonModule],
   templateUrl: './collection-category.html',
   styleUrl: './collection-category.css'
 })
 export class CollectionCategory implements OnInit {
 
   categoriesId: string | null = null;
-  filteredProducts: any[] = [];
-  categories: any = (categories as any).default.categories;
-  products: any = (productsData as any).default;
+  filteredProducts: ProductList[] = [];
+  currentCategory: Category | null = null;
 
   constructor(
     private activeRoute: ActivatedRoute,
     private router: Router,
-    public wishlistService: Wishlistservice
+    public wishlistService: Wishlistservice,
+    private catalogService: CatalogService
   ) { }
 
   navigate(slug: string) {
@@ -39,11 +39,37 @@ export class CollectionCategory implements OnInit {
       this.categoriesId = params.get('route');
 
       if (this.categoriesId === 'all-products') {
-        this.filteredProducts = this.products;
+        // Load all products
+        this.catalogService.getProducts().subscribe({
+          next: (products) => {
+            this.filteredProducts = products;
+          },
+          error: (err) => console.error('Error loading products:', err)
+        });
+        
+        // Load the "all-products" category info
+        this.catalogService.getCategory('all-products').subscribe({
+          next: (category) => {
+            this.currentCategory = category;
+          },
+          error: (err) => console.error('Error loading category:', err)
+        });
       } else if (this.categoriesId) {
-        this.filteredProducts = this.products.filter(
-          (product: any) => product.categories.includes(this.categoriesId)
-        );
+        // Load products for specific category
+        this.catalogService.getProducts({ category: this.categoriesId }).subscribe({
+          next: (products) => {
+            this.filteredProducts = products;
+          },
+          error: (err) => console.error('Error loading products:', err)
+        });
+        
+        // Load category info
+        this.catalogService.getCategory(this.categoriesId).subscribe({
+          next: (category) => {
+            this.currentCategory = category;
+          },
+          error: (err) => console.error('Error loading category:', err)
+        });
       } else {
         this.filteredProducts = [];
       }

@@ -46,11 +46,11 @@
                         </div>
                         <div class="product-card" *ngFor="let p of state.resultsFor(state.query()).products.slice(0,4)"
                             (click)="navPro(p.short)">
-                            <img [src]="p.image[0]" alt="{{p.name}}" />
+                            <img [src]="p.images[0]?.image_path || 'assets/placeholder.png'" alt="{{p.name}}" />
                             <div class="flex">
                                 <div class="name">{{ p.name }}</div>
-                                <div class="price">Rs. {{ p.price[0].discounted }} <span class="old">Rs. {{
-                                        p.price[0].original
+                                <div class="price" *ngIf="p.variants[0]">Rs. {{ p.variants[0].discounted_price }} <span class="old">Rs. {{
+                                        p.variants[0].original_price
                                         }}</span></div>
                             </div>
                         </div>

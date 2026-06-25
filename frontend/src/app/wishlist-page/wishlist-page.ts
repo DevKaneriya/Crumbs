@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
 import { Router } from '@angular/router';
-import * as productsData from '../../Jsonfile/product.json';
 import { CommonModule } from '@angular/common';
 import { Wishlistservice } from '../../services/wishlistservice';
+import { CatalogService } from '../../services/catalog.service';
+import { ProductList } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-wishlist-page',
@@ -16,19 +17,30 @@ import { Wishlistservice } from '../../services/wishlistservice';
 export class WishlistPage implements OnInit {
 
   wishlist: any[] = [];
-  products: any = (productsData as any).default;
-  filteredProducts: any[] = [];
+  filteredProducts: ProductList[] = [];
 
   constructor(
     private router: Router,
-    public wishlistService: Wishlistservice
+    public wishlistService: Wishlistservice,
+    private catalogService: CatalogService
   ) { }
 
   ngOnInit(): void {
+    this.loadWishlist();
+  }
+
+  loadWishlist() {
     this.wishlist = this.wishlistService.getWishlist();
-    this.filteredProducts = this.products.filter((p: { id: any }) =>
-      this.wishlist.includes(p.id)
-    );
+    
+    // Load all products and filter by wishlist
+    this.catalogService.getProducts().subscribe({
+      next: (products) => {
+        this.filteredProducts = products.filter((p: ProductList) =>
+          this.wishlist.includes(p.id)
+        );
+      },
+      error: (err) => console.error('Error loading products:', err)
+    });
   }
 
   navigate(slug: string) {
@@ -46,9 +58,6 @@ export class WishlistPage implements OnInit {
   toggleWishlist(product: any, event: Event) {
     event.stopPropagation();
     this.wishlistService.removeFromWishlist(product.id);
-    this.wishlist = this.wishlistService.getWishlist();
-    this.filteredProducts = this.products.filter((p: { id: any }) =>
-      this.wishlist.includes(p.id)
-    );
+    this.loadWishlist();
   }
 }

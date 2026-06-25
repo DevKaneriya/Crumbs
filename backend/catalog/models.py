@@ -11,10 +11,11 @@ class Category(models.Model):
     icon = models.CharField(max_length=255, blank=True)  # Path to asset
     image = models.CharField(max_length=255, blank=True)  # Path to asset
     content = models.TextField(blank=True)
+    display_order = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "Categories"
-        ordering = ['name']
+        ordering = ['display_order', 'name']
 
     def __str__(self):
         return self.name
