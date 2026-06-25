@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, firstValueFrom, map, of, tap } from 'rxjs';
 import { Wishlistservice } from './wishlistservice';
@@ -58,7 +58,8 @@ export class Auth {
       // Then check the current session
       const session = await this.getSession();
       if (session.authenticated && session.user) {
-        this.setCurrentUser(session.user);
+        // Session restore (page refresh): load from DB, do NOT re-sync local
+        this.setCurrentUser(session.user, false);
         return;
       }
 
@@ -66,7 +67,7 @@ export class Auth {
       if (refreshed && !session.authenticated) {
         const refreshedSession = await this.getSession();
         if (refreshedSession.authenticated && refreshedSession.user) {
-          this.setCurrentUser(refreshedSession.user);
+          this.setCurrentUser(refreshedSession.user, false);
           return;
         }
       }
@@ -84,7 +85,7 @@ export class Auth {
       data,
       { withCredentials: true }
     ).pipe(
-      tap(res => this.setCurrentUser(res.user)),
+      tap(res => this.setCurrentUser(res.user, true)),
     );
   }
 
@@ -94,7 +95,7 @@ export class Auth {
       data,
       { withCredentials: true }
     ).pipe(
-      tap(res => this.setCurrentUser(res.user)),
+      tap(res => this.setCurrentUser(res.user, true)),
     );
   }
 
@@ -137,7 +138,7 @@ export class Auth {
     ).pipe(
       map(res => {
         if (res.authenticated && res.user) {
-          this.setCurrentUser(res.user);
+          this.setCurrentUser(res.user, false);
           return res.user;
         }
         // Return null if not authenticated
@@ -213,10 +214,19 @@ export class Auth {
     });
   }
 
-  private setCurrentUser(user: AuthUser) {
+  private setCurrentUser(user: AuthUser, isNewLogin: boolean = false) {
     this.currentUserSubject.next(user);
     if (this.isBrowser()) {
       localStorage.setItem(this.storageKey, JSON.stringify(user));
+    }
+    if (isNewLogin) {
+      // Fresh login: merge guest local items into DB
+      this.cartService.syncCart();
+      this.wishlistService.syncWishlist();
+    } else {
+      // Session restore (page refresh): DB is source of truth, load from it
+      this.cartService.loadFromDB();
+      this.wishlistService.loadFromDBRemote();
     }
   }
 
@@ -225,5 +235,7 @@ export class Auth {
     if (this.isBrowser()) {
       localStorage.removeItem(this.storageKey);
     }
+    this.cartService.clearCart(true);
+    this.wishlistService.clearWishlist(true);
   }
 }

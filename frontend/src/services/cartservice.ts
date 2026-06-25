@@ -1,4 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 export interface CartItem {
   productId: number | string;
@@ -15,6 +17,7 @@ export class Cartservice {
   public cart = signal<CartItem[]>([]);
   cartCount = computed(() => this.cart().reduce((sum, item) => sum + item.quantity, 0));
   public isCartOpen = signal(false);
+  private http = inject(HttpClient);
 
   constructor() {
     if (this.isBrowser()) {
@@ -23,6 +26,28 @@ export class Cartservice {
         this.cart.set(JSON.parse(saved));
       }
     }
+  }
+
+  isLoggedIn() {
+    return this.isBrowser() && !!localStorage.getItem('auth_user');
+  }
+
+  syncCart() {
+    const localItems = this.cart();
+    this.http.post<CartItem[]>(`${environment.apiUrl}/accounts/cart/sync/`, { items: localItems }, { withCredentials: true })
+      .subscribe(mergedCart => {
+        this.cart.set(mergedCart);
+        this.saveToLocal(mergedCart);
+      });
+  }
+
+  // Called on page refresh/session restore — DB is source of truth, don't re-merge local
+  loadFromDB() {
+    this.http.get<CartItem[]>(`${environment.apiUrl}/accounts/cart/sync/`, { withCredentials: true })
+      .subscribe(dbCart => {
+        this.cart.set(dbCart);
+        this.saveToLocal(dbCart);
+      });
   }
 
   addToCart(productId: number | string, variant: string, quantity: number) {
@@ -36,6 +61,11 @@ export class Cartservice {
       this.saveToLocal(cart);
       return [...cart];
     });
+    
+    if (this.isLoggedIn()) {
+      this.http.post(`${environment.apiUrl}/accounts/cart/add/`, { productId, variant, quantity }, { withCredentials: true }).subscribe();
+    }
+    
     this.isCartOpen.set(true);
   }
 
@@ -45,11 +75,19 @@ export class Cartservice {
       this.saveToLocal(updated);
       return updated;
     });
+
+    if (this.isLoggedIn()) {
+      this.http.post(`${environment.apiUrl}/accounts/cart/remove/`, { productId, variant }, { withCredentials: true }).subscribe();
+    }
   }
 
-  clearCart() {
+  clearCart(localOnly = false) {
     this.cart.set([]);
     if (this.isBrowser()) localStorage.removeItem(this.storageKey);
+    
+    if (!localOnly && this.isLoggedIn()) {
+      this.http.post(`${environment.apiUrl}/accounts/cart/clear/`, {}, { withCredentials: true }).subscribe();
+    }
   }
 
   private saveToLocal(cart: CartItem[]) {

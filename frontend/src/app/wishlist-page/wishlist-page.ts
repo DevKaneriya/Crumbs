@@ -57,7 +57,7 @@ export class WishlistPage implements OnInit {
 
   toggleWishlist(product: any, event: Event) {
     event.stopPropagation();
-    this.wishlistService.removeFromWishlist(product.id);
+    this.wishlistService.toggleWishlist(product.id);
     this.loadWishlist();
   }
 }

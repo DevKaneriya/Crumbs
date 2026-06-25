@@ -1,4 +1,4 @@
-﻿from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Q
 from django.utils.encoding import force_bytes
@@ -127,3 +127,17 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         user.save()
         return user
 
+
+from .models import CartItem, WishlistItem
+
+class CartItemSerializer(serializers.ModelSerializer):
+    productId = serializers.IntegerField(source='product_id')
+    
+    class Meta:
+        model = CartItem
+        fields = ['productId', 'variant', 'quantity']
+
+class WishlistItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WishlistItem
+        fields = ['product']

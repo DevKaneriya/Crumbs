@@ -1,4 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +10,7 @@ export class Wishlistservice {
   private storageKey = 'wishlist';
   public wishlist = signal<number[]>([]);
   wishlistCount = computed(() => this.wishlist().length);
+  private http = inject(HttpClient);
 
   constructor() {
     if (this.isBrowser()) {
@@ -18,8 +21,33 @@ export class Wishlistservice {
     }
   }
 
+  syncWishlist() {
+    const localItems = this.wishlist();
+    this.http.post<number[]>(`${environment.apiUrl}/accounts/wishlist/sync/`, { items: localItems }, { withCredentials: true })
+      .subscribe(mergedWishlist => {
+        this.wishlist.set(mergedWishlist);
+        if (this.isBrowser()) {
+          localStorage.setItem(this.storageKey, JSON.stringify(mergedWishlist));
+        }
+      });
+  }
+
   loadFromDB(dbWishlist: number[]) {
     this.wishlist.set(dbWishlist || []);
+    if (this.isBrowser()) {
+      localStorage.setItem(this.storageKey, JSON.stringify(dbWishlist || []));
+    }
+  }
+
+  // Called on page refresh/session restore — fetches DB state without re-merging local
+  loadFromDBRemote() {
+    this.http.get<number[]>(`${environment.apiUrl}/accounts/wishlist/sync/`, { withCredentials: true })
+      .subscribe(dbWishlist => {
+        this.wishlist.set(dbWishlist);
+        if (this.isBrowser()) {
+          localStorage.setItem(this.storageKey, JSON.stringify(dbWishlist));
+        }
+      });
   }
 
   saveToLocalFromDB(dbWishlist: number[]) {
@@ -63,10 +91,23 @@ export class Wishlistservice {
     this.isInWishlist(productId)
       ? this.removeFromWishlist(productId)
       : this.addToWishlist(productId);
+
+    if (this.isLoggedIn()) {
+      this.http.post(`${environment.apiUrl}/accounts/wishlist/toggle/`, { productId }, { withCredentials: true }).subscribe();
+    }
+  }
+  
+  clearWishlist(localOnly = false) {
+    this.wishlist.set([]);
+    if (this.isBrowser()) localStorage.removeItem(this.storageKey);
+    
+    if (!localOnly && this.isLoggedIn()) {
+      this.http.post(`${environment.apiUrl}/accounts/wishlist/clear/`, {}, { withCredentials: true }).subscribe();
+    }
   }
 
   public isLoggedIn() {
-    return this.isBrowser() && !!localStorage.getItem('auth_token');
+    return this.isBrowser() && !!localStorage.getItem('auth_user');
   }
 
   private isBrowser() {

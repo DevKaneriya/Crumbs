@@ -1,4 +1,4 @@
-﻿from django.conf import settings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -280,3 +280,143 @@ class PasswordResetConfirmView(APIView):
                 {'error': 'An error occurred while resetting your password.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+from .models import CartItem, WishlistItem
+from .serializers import CartItemSerializer, WishlistItemSerializer
+from catalog.models import Product
+
+class CartSyncView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Return the user's DB cart — used on session restore."""
+        cart_items = CartItem.objects.filter(user=request.user)
+        serializer = CartItemSerializer(cart_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Merge local guest cart into DB — used on fresh login only.
+        
+        Merge strategy: additive (x + y).
+        - x = quantity already in the user's DB cart from a previous session.
+        - y = quantity the user added as a guest before logging in.
+        - Result = x + y, preserving both the saved account cart and the guest additions.
+        
+        This is safe because after sync the frontend overwrites localStorage with the 
+        server's merged result, and on logout localStorage is cleared. So a re-login 
+        will never see stale local items to double-add.
+        """
+        local_items = request.data.get('items', [])
+        user = request.user
+
+        for item in local_items:
+            try:
+                product_id = item.get('productId')
+                variant = item.get('variant')
+                quantity = item.get('quantity', 1)
+
+                product = Product.objects.get(id=product_id)
+                cart_item, created = CartItem.objects.get_or_create(
+                    user=user, product=product, variant=variant,
+                    defaults={'quantity': quantity}
+                )
+                # Additive merge: DB quantity + guest quantity = combined total
+                if not created:
+                    cart_item.quantity += quantity
+                    cart_item.save()
+            except Product.DoesNotExist:
+                continue
+
+        cart_items = CartItem.objects.filter(user=user)
+        serializer = CartItemSerializer(cart_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CartAddView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('productId')
+        variant = request.data.get('variant')
+        quantity = request.data.get('quantity', 1)
+
+        try:
+            product = Product.objects.get(id=product_id)
+            cart_item, created = CartItem.objects.get_or_create(
+                user=request.user, product=product, variant=variant,
+                defaults={'quantity': quantity}
+            )
+            if not created:
+                cart_item.quantity += quantity
+                if cart_item.quantity <= 0:
+                    cart_item.delete()
+                else:
+                    cart_item.save()
+            elif quantity <= 0:
+                cart_item.delete()
+
+            return Response({'message': 'Cart updated'}, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class CartRemoveView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('productId')
+        variant = request.data.get('variant')
+        CartItem.objects.filter(user=request.user, product_id=product_id, variant=variant).delete()
+        return Response({'message': 'Item removed'}, status=status.HTTP_200_OK)
+
+class CartClearView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        CartItem.objects.filter(user=request.user).delete()
+        return Response({'message': 'Cart cleared'}, status=status.HTTP_200_OK)
+
+class WishlistSyncView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Return the user's DB wishlist — used on session restore."""
+        wishlist_items = WishlistItem.objects.filter(user=request.user).values_list('product_id', flat=True)
+        return Response(list(wishlist_items), status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Merge local guest wishlist into DB — used on fresh login only."""
+        local_items = request.data.get('items', [])
+        user = request.user
+
+        for product_id in local_items:
+            try:
+                product = Product.objects.get(id=product_id)
+                WishlistItem.objects.get_or_create(user=user, product=product)
+            except Product.DoesNotExist:
+                continue
+
+        wishlist_items = WishlistItem.objects.filter(user=user).values_list('product_id', flat=True)
+        return Response(list(wishlist_items), status=status.HTTP_200_OK)
+
+class WishlistToggleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('productId')
+        try:
+            product = Product.objects.get(id=product_id)
+            item = WishlistItem.objects.filter(user=request.user, product=product).first()
+            if item:
+                item.delete()
+            else:
+                WishlistItem.objects.create(user=request.user, product=product)
+            return Response({'message': 'Success'}, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class WishlistClearView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        WishlistItem.objects.filter(user=request.user).delete()
+        return Response({'message': 'Wishlist cleared'}, status=status.HTTP_200_OK)
