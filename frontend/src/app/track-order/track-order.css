@@ -1,0 +1,150 @@
+.page-wrapper {
+  background-color: var(--background-color);
+  padding: var(--padding);
+}
+
+.page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.7;
+  color: #3e2f2f;
+}
+
+.title {
+  font-size: var(--header);
+  font-weight: var(--header-weight);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: #7b6c6c;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: black;
+}
+
+.breadcrumb .active {
+  font-weight: bold;
+  color: #3b1f1f;
+}
+
+.intro {
+  font-size: var(--content);
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #5a4040;
+}
+
+.steps-section {
+  margin-bottom: 2.5rem;
+}
+
+.steps-section h3 {
+  font-size: var(--sub-header);
+  font-weight: bold;
+  margin-bottom: 1.25rem;
+  color: #3b1f1f;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background: #fff8f0;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+}
+
+.step-num {
+  min-width: 40px;
+  height: 40px;
+  background-color: var(--orange);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.step-body strong {
+  font-size: var(--content);
+  color: #3b1f1f;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.step-body p {
+  font-size: calc(var(--content) - 1px);
+  font-weight: var(--content-weight);
+  margin: 0;
+  color: #5a4040;
+}
+
+.contact-section {
+  background: #fff8f0;
+  border-left: 4px solid var(--orange);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+}
+
+.contact-section h3 {
+  font-size: var(--sub-header);
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: #3b1f1f;
+}
+
+.contact-section p {
+  font-size: var(--content);
+  margin-bottom: 0.75rem;
+}
+
+.contact-section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.25rem;
+}
+
+.contact-section li {
+  margin-bottom: 0.5rem;
+  font-size: var(--content);
+}
+
+.contact-section a:not(.cta-btn) {
+  color: #5a2d2d;
+  text-decoration: underline;
+}
+
+.cta-btn {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.6rem 1.6rem;
+  background-color: var(--orange);
+  color: white;
+  font-weight: 600;
+  font-size: var(--content);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.cta-btn:hover {
+  background-color: #d4880f;
+  color: white;
+}

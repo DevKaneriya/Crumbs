@@ -24,14 +24,9 @@
             (mouseenter)="hovering = true"
             (mouseleave)="hovering = false"
           >
-            <span class="zoom-hint">
-              <i class="fas fa-search-plus"></i> Zoom in
-            </span>
-
             <img
               [src]="selectedImage"
               class="main-image"
-              [class.zoomed]="hovering"
               [alt]="selectedProduct.name"
             />
 
@@ -78,10 +73,6 @@
         <div class="product-info">
           <div class="title-row">
             <h1 class="product-title">{{ selectedProduct.name }}</h1>
-            <button type="button" class="wishlist-link" (click)="toggleWishlist()">
-              <i class="fas fa-heart" [class.active]="isInWishlist"></i>
-              Add to wishlist
-            </button>
           </div>
 
           <div class="size-section" *ngIf="selectedProduct.variants.length">
@@ -139,19 +130,22 @@
             </button>
           </div>
 
-          <div class="ask-form" *ngIf="showAskQuestion">
-            <h3>Ask a Question</h3>
-            <p class="required-note">* Required fields</p>
-            <div class="form-group">
-              <input type="text" placeholder="Your name *" [(ngModel)]="askForm.name" />
+          <div class="ask-form-overlay" *ngIf="showAskQuestion" (click)="toggleAskQuestion()">
+            <div class="ask-form" (click)="$event.stopPropagation()">
+              <button type="button" class="close-popup" (click)="toggleAskQuestion()">×</button>
+              <h3>Ask a Question</h3>
+              <p class="required-note">* Required fields</p>
+              <div class="form-group">
+                <input type="text" placeholder="Your name *" [(ngModel)]="askForm.name" />
+              </div>
+              <div class="form-group">
+                <input type="email" placeholder="Your email *" [(ngModel)]="askForm.email" />
+              </div>
+              <div class="form-group">
+                <textarea rows="4" placeholder="Your question *" [(ngModel)]="askForm.message"></textarea>
+              </div>
+              <button type="button" class="submit-btn" (click)="submitQuestion()">Submit Now</button>
             </div>
-            <div class="form-group">
-              <input type="email" placeholder="Your email *" [(ngModel)]="askForm.email" />
-            </div>
-            <div class="form-group">
-              <textarea rows="4" placeholder="Your question *" [(ngModel)]="askForm.message"></textarea>
-            </div>
-            <button type="button" class="submit-btn" (click)="submitQuestion()">Submit Now</button>
           </div>
         </div>
       </div>

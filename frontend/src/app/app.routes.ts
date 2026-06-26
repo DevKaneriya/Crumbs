@@ -16,12 +16,18 @@ import { AddressComponent } from './address/address';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { ResetPassword } from './reset-password/reset-password';
 import { authGuard } from '../guards/auth.guard';
+import { CustomizedOrder } from './customized-order/customized-order';
+import { TrackOrder } from './track-order/track-order';
+import { ReturnRefund } from './return-refund/return-refund';
 
 export const routes: Routes = [
     { path: '', component: Home },
     { path: 'contact', component: Contact },
     { path: 'privacy', component: PrivacyPolicy },
     { path: 'terms', component: Terms },
+    { path: 'customized-order', component: CustomizedOrder },
+    { path: 'track-order', component: TrackOrder },
+    { path: 'return-refund', component: ReturnRefund },
 
     { path: 'account', component: Dashboard, canActivate: [authGuard] },
     { path: 'account/address', component: AddressComponent, canActivate: [authGuard] },
@@ -30,7 +36,7 @@ export const routes: Routes = [
     { path: 'account/forgot-password', component: ForgotPassword },
     { path: 'account/reset-password', component: ResetPassword },
 
-    { path: 'wishlist', component: WishlistPage, canActivate: [authGuard] },
+    { path: 'wishlist', component: WishlistPage },
 
     {
         path: 'blogs',
