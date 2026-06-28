@@ -128,7 +128,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         return user
 
 
-from .models import CartItem, WishlistItem
+from .models import CartItem, WishlistItem, Address
 
 class CartItemSerializer(serializers.ModelSerializer):
     productId = serializers.IntegerField(source='product_id')
@@ -141,3 +141,9 @@ class WishlistItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishlistItem
         fields = ['product']
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['id', 'first_name', 'last_name', 'address', 'apartment', 'city', 'state', 'pin_code', 'phone_no', 'is_default']
+        read_only_fields = ['id']

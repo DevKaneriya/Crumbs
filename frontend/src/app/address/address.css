@@ -71,6 +71,38 @@ li a {
     display: flex;
     gap: 40px 40px;
     flex-wrap: wrap;
+    width: 100%;
+}
+
+.empty-state {
+    width: 100%;
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 18px;
+    color: #555;
+    background-color: rgb(255, 248, 246);
+    border: 2px dashed #d1cfcf;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-new-small {
+    background-color: transparent;
+    border: 2px solid #ED661B;
+    color: #ED661B;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-new-small:hover {
+    background-color: #ED661B;
+    color: white;
 }
 
 .add-card {

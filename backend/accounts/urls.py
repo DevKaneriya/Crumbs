@@ -17,6 +17,8 @@ from .views import (
     WishlistSyncView,
     WishlistToggleView,
     WishlistClearView,
+    AddressListCreateView,
+    AddressRetrieveUpdateDestroyView,
 )
 
 urlpatterns = [
@@ -36,4 +38,6 @@ urlpatterns = [
     path('wishlist/sync/', WishlistSyncView.as_view(), name='wishlist_sync'),
     path('wishlist/toggle/', WishlistToggleView.as_view(), name='wishlist_toggle'),
     path('wishlist/clear/', WishlistClearView.as_view(), name='wishlist_clear'),
+    path('address/', AddressListCreateView.as_view(), name='address_list_create'),
+    path('address/<int:pk>/', AddressRetrieveUpdateDestroyView.as_view(), name='address_retrieve_update_destroy'),
 ]

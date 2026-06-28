@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 export interface Address {
   id?: number;
@@ -18,78 +20,22 @@ export interface Address {
   providedIn: 'root'
 })
 export class AddressService {
-
-  private storageKey = 'addresses';
-
-  constructor() {
-    if (this.isBrowser() && !localStorage.getItem(this.storageKey)) {
-      const initialAddresses: Address[] = [
-        {
-          id: 1,
-          first_name: 'John',
-          last_name: 'Doe',
-          address: '123 Main Street',
-          apartment: 'Apt 4B',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          pin_code: '400001',
-          phone_no: '9876543210',
-          is_default: true
-        }
-      ];
-      localStorage.setItem(this.storageKey, JSON.stringify(initialAddresses));
-    }
-  }
-
-  private getStored(): Address[] {
-    if (!this.isBrowser()) return [];
-    return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
-  }
-
-  private saveStored(addresses: Address[]) {
-    if (this.isBrowser()) {
-      localStorage.setItem(this.storageKey, JSON.stringify(addresses));
-    }
-  }
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/accounts/address/`;
 
   getAddresses(): Observable<Address[]> {
-    return of(this.getStored());
+    return this.http.get<Address[]>(this.apiUrl, { withCredentials: true });
   }
 
   addAddress(address: Address): Observable<Address> {
-    const list = this.getStored();
-    const newAddress = { ...address, id: Date.now() };
-    if (newAddress.is_default) {
-      list.forEach(a => a.is_default = false);
-    }
-    list.push(newAddress);
-    this.saveStored(list);
-    return of(newAddress);
+    return this.http.post<Address>(this.apiUrl, address, { withCredentials: true });
   }
 
   updateAddress(id: number, address: Address): Observable<Address> {
-    const list = this.getStored();
-    const index = list.findIndex(a => a.id === id);
-    if (index !== -1) {
-      const updated = { ...list[index], ...address };
-      if (updated.is_default) {
-        list.forEach(a => a.is_default = false);
-      }
-      list[index] = updated;
-      this.saveStored(list);
-      return of(updated);
-    }
-    return of(address);
+    return this.http.put<Address>(`${this.apiUrl}${id}/`, address, { withCredentials: true });
   }
 
   deleteAddress(id: number): Observable<any> {
-    let list = this.getStored();
-    list = list.filter(a => a.id !== id);
-    this.saveStored(list);
-    return of({ success: true });
-  }
-
-  private isBrowser() {
-    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+    return this.http.delete(`${this.apiUrl}${id}/`, { withCredentials: true });
   }
 }

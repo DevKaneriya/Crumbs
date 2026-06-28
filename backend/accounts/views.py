@@ -420,3 +420,24 @@ class WishlistClearView(APIView):
     def post(self, request):
         WishlistItem.objects.filter(user=request.user).delete()
         return Response({'message': 'Wishlist cleared'}, status=status.HTTP_200_OK)
+
+from rest_framework import generics
+from .models import Address
+from .serializers import AddressSerializer
+
+class AddressListCreateView(generics.ListCreateAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user).order_by('-is_default', '-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class AddressRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)

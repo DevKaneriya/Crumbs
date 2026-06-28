@@ -77,6 +77,10 @@
 
 
                 <div class="wrapper">
+                    <div class="empty-state" *ngIf="addresses.length === 0 && !addMode">
+                        <p>You have no saved addresses yet.</p>
+                        <button class="add-new-small" (click)="toggleAdd()">Add an Address</button>
+                    </div>
                     <div class="width" *ngFor="let addr of addresses; let i = index">
 
                         <div class="add-card" *ngIf="editIndex !== i">
