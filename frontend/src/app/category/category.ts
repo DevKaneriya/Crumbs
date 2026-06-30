@@ -20,14 +20,20 @@ export class Category implements OnInit {
 
   categories: CategoryModel[] = [];
   selectedCategory: CategoryModel[] = [];
+  isLoading = true;
 
   ngOnInit() {
+    this.isLoading = true;
     this.catalogService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
         this.selectedCategory = this.categories.slice(1, 9);
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading categories:', err)
+      error: (err) => {
+        console.error('Error loading categories:', err);
+        this.isLoading = false;
+      }
     });
   }
 

@@ -1,4 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Ensure [hidden] always wins over any component-level display rules.
+   This is critical for the skeleton ↔ content swap via Angular [hidden] binding
+   to work without layout shifts. */
+[hidden] {
+  display: none !important;
+}
+
+/* ─── Global Skeleton Shimmer ─────────────────────────────────────────────
+   Defined here (styles.css = truly global) NOT in app.css which is
+   ViewEncapsulation.Emulated scoped and won't reach child components.      */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e0d8d5 25%, #ede8e6 50%, #e0d8d5 75%);
+  background-size: 600px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
 * {
     margin: 0;
     padding: 0;

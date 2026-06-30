@@ -18,6 +18,7 @@ export class WishlistPage implements OnInit {
 
   wishlist: any[] = [];
   filteredProducts: ProductList[] = [];
+  isLoading = true;
 
   constructor(
     private router: Router,
@@ -31,6 +32,7 @@ export class WishlistPage implements OnInit {
 
   loadWishlist() {
     this.wishlist = this.wishlistService.getWishlist();
+    this.isLoading = true;
     
     // Load all products and filter by wishlist
     this.catalogService.getProducts().subscribe({
@@ -38,8 +40,12 @@ export class WishlistPage implements OnInit {
         this.filteredProducts = products.filter((p: ProductList) =>
           this.wishlist.includes(p.id)
         );
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading products:', err)
+      error: (err) => {
+        console.error('Error loading products:', err);
+        this.isLoading = false;
+      }
     });
   }
 

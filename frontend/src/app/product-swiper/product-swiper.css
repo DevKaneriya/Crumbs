@@ -12,6 +12,8 @@
     position: relative;
     padding: 0 40px 60px;
     background-color: var(--background-color);
+    /* Prevent section collapse during data load */
+    min-height: 430px;
 }
 
 .products {
@@ -66,6 +68,8 @@
 
 .img {
     width: 100%;
+    height: 280px;
+    object-fit: cover;
     display: block;
     transition: opacity 0.5s ease-in-out;
 }
@@ -160,6 +164,7 @@
 
     .slickSlider {
         padding: 0px 25px 40px;
+        min-height: 360px;
     }
 
     .products {
@@ -179,3 +184,39 @@
     }
 
 }
+
+/* ─── Skeleton ─────────────────────────────────────────────────────────── */
+.skeleton-carousel {
+  display: flex;
+  gap: 20px;
+  overflow: hidden;
+  padding: 0 20px 40px;
+}
+
+.skeleton-card {
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 280px;
+}
+
+.skeleton-name {
+  height: 18px;
+  width: 70%;
+}
+
+.skeleton-price {
+  height: 14px;
+  width: 50%;
+}
+
+.skeleton-btn {
+  height: 40px;
+  width: 100%;
+  border-radius: 8px;
+}

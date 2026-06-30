@@ -1,4 +1,4 @@
-﻿from datetime import timedelta
+from datetime import timedelta
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -250,3 +250,50 @@ LOGGING = {
 
 # Default Auto Field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery Configuration Options
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'redis_client_kwargs': {
+        'protocol': 2
+    }
+}
+CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
+    'redis_client_kwargs': {
+        'protocol': 2
+    }
+}
+
+# In development without Redis, run tasks synchronously (no worker needed)
+if not os.environ.get('REDIS_URL', ''):
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+
+# Cache Backend — Redis in production, in-memory in development
+REDIS_URL = os.environ.get('REDIS_URL', '')
+
+if REDIS_URL:
+    # Production: use Redis
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        }
+    }
+else:
+    # Development: use fast in-memory cache (no Redis needed)
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+

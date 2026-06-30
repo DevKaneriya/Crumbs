@@ -6,6 +6,8 @@
   flex-direction: column;
   text-align: center;
   gap: var(--gap);
+  /* Prevent section from collapsing during load */
+  min-height: 420px;
 }
 
 .header {
@@ -149,6 +151,7 @@
 
   .main {
     padding: 40px 0;
+    min-height: 320px;
   }
 
   .category-slider {
@@ -175,3 +178,34 @@
     scroll-snap-align: start;
   }
 }
+
+/* ─── Skeleton Loader ────────────────────────────────────────────────────── */
+.skeleton-category-box {
+  height: 230px;
+  width: 100%;
+}
+
+.skeleton-category-name {
+  height: 18px;
+  width: 60%;
+  margin: 15px auto 0;
+  border-radius: 4px;
+}
+
+@media (min-width: 769px) and (max-width: 1150px) {
+  .skeleton-category-box {
+    height: 160px;
+  }
+}
+
+@media (min-width: 1151px) {
+  .skeleton-category-box {
+    height: 190px;
+  }
+}
+
+@media (max-width: 768px) {
+  .skeleton-category-box {
+    height: 180px;
+  }
+}

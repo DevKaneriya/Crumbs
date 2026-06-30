@@ -4,7 +4,14 @@
 
 <div class="main">
 
-    <div *ngIf="currentCategory">
+    <!-- Skeleton: Category Header — stays in DOM, just hidden -->
+    <div class="head" [hidden]="!isLoading">
+        <div class="skeleton skeleton-head-title"></div>
+        <div class="skeleton skeleton-head-content"></div>
+    </div>
+
+    <!-- Category Header (shown once loaded) — stays in DOM, just hidden -->
+    <div *ngIf="currentCategory" [hidden]="isLoading">
         <div class="head">
             <div class="head-header">
                 {{currentCategory.name.toUpperCase()}}
@@ -15,9 +22,20 @@
         </div>
     </div>
 
-    <div class="products">
+    <!-- Skeleton: Product Grid — stays in DOM, just hidden -->
+    <div class="products" [hidden]="!isLoading">
+        <div class="skeleton-product-card" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton skeleton-name"></div>
+            <div class="skeleton skeleton-price"></div>
+            <div class="skeleton skeleton-btn"></div>
+        </div>
+    </div>
 
-        <div class="product-card" *ngFor=" let product of filteredProducts" (click)="navigate(product.short)">
+    <!-- Actual Products — stays in DOM, just hidden -->
+    <div class="products" [hidden]="isLoading">
+
+        <div class="product-card" *ngFor="let product of filteredProducts" (click)="navigate(product.short)">
 
             <div class="image-container">
 

@@ -178,3 +178,47 @@
         font-size: 12px;
     }
 }
+
+/* ─── Skeleton Loader ────────────────────────────────────────────────────── */
+.skeleton-product-card {
+    flex: 1 1 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeleton-img {
+    width: 100%;
+    height: 280px;
+}
+
+.skeleton-name {
+    height: 18px;
+    width: 70%;
+}
+
+.skeleton-price {
+    height: 14px;
+    width: 50%;
+}
+
+.skeleton-btn {
+    height: 42px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+@media (max-width: 1200px) {
+    .skeleton-product-card {
+        flex: 1 1 calc(33.33% - 20px);
+        max-width: calc(33.33% - 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .skeleton-product-card {
+        flex: 1 1 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+    }
+}

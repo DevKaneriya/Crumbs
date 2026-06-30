@@ -15,15 +15,21 @@ import { Category } from '../../models/catalog.models';
 export class CollectionPage implements OnInit {
 
   categories: Category[] = [];
+  isLoading = true;
 
   constructor(private catalogService: CatalogService) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.catalogService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading categories:', err)
+      error: (err) => {
+        console.error('Error loading categories:', err);
+        this.isLoading = false;
+      }
     });
   }
 

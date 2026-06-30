@@ -20,6 +20,7 @@ export class CollectionCategory implements OnInit {
   categoriesId: string | null = null;
   filteredProducts: ProductList[] = [];
   currentCategory: Category | null = null;
+  isLoading = true;
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -43,8 +44,9 @@ export class CollectionCategory implements OnInit {
         this.catalogService.getProducts().subscribe({
           next: (products) => {
             this.filteredProducts = products;
+            this.isLoading = false;
           },
-          error: (err) => console.error('Error loading products:', err)
+          error: (err) => { console.error('Error loading products:', err); this.isLoading = false; }
         });
         
         // Load the "all-products" category info
@@ -59,8 +61,9 @@ export class CollectionCategory implements OnInit {
         this.catalogService.getProducts({ category: this.categoriesId }).subscribe({
           next: (products) => {
             this.filteredProducts = products;
+            this.isLoading = false;
           },
-          error: (err) => console.error('Error loading products:', err)
+          error: (err) => { console.error('Error loading products:', err); this.isLoading = false; }
         });
         
         // Load category info

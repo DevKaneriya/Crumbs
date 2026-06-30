@@ -1,10 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -23,9 +21,13 @@ from .serializers import (
     PasswordResetRequestSerializer,
     RegisterSerializer,
 )
+from .tasks import (
+    send_password_reset_email_task,
+    send_registration_success_email_task,
+    send_login_success_email_task,
+)
 
 User = get_user_model()
-
 
 
 def _set_auth_cookies(response, access_token, refresh_token=None):
@@ -38,7 +40,6 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
         samesite=settings.AUTH_COOKIE_SAMESITE,
         path='/',
     )
-
     if refresh_token is not None:
         response.set_cookie(
             settings.AUTH_COOKIE_REFRESH,
@@ -83,6 +84,9 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
+        # Send welcome email asynchronously via Celery
+        send_registration_success_email_task.delay(user.email, user.first_name or user.username)
+
         refresh = RefreshToken.for_user(user)
         response = Response(
             {
@@ -103,10 +107,14 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
+        user_payload = data['user']
+        # Send login notification email asynchronously via Celery
+        send_login_success_email_task.delay(user_payload['email'], user_payload['name'])
+
         response = Response(
             {
                 'message': 'Login successful.',
-                'user': data['user'],
+                'user': user_payload,
             },
             status=status.HTTP_200_OK,
         )
@@ -176,12 +184,10 @@ class SessionView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-
         return Response(
             {'authenticated': False, 'user': None},
             status=status.HTTP_200_OK,
         )
-
 
 
 class PasswordResetRequestView(APIView):
@@ -193,7 +199,7 @@ class PasswordResetRequestView(APIView):
     def post(self, request):
         serializer = PasswordResetRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         email = serializer.validated_data['email']
         user = User.objects.filter(
             Q(username__iexact=email) | Q(email__iexact=email)
@@ -201,24 +207,18 @@ class PasswordResetRequestView(APIView):
 
         # Always return success to prevent email enumeration
         if user and user.email:
-            # Generate password reset token
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            # Ensure uid is a string
             uid_str = uid.decode() if isinstance(uid, bytes) else uid
-            
-            # Build reset URL - DON'T use urlencode for email links
-            # The browser will handle the URL parameters correctly
+
             reset_url = f"{settings.FRONTEND_URL}/account/reset-password?uid={uid_str}&token={token}"
-            
-            # Print to console for easy copying during development
+
             print(f"\n{'='*60}")
             print(f"PASSWORD RESET LINK FOR: {user.email}")
             print(f"{'='*60}")
             print(f"{reset_url}")
             print(f"{'='*60}\n")
-            
-            # Send email - use plain text without special formatting
+
             subject = 'Password Reset Request'
             message = f"""Hello {user.first_name or user.username},
 
@@ -233,18 +233,9 @@ If you didn't request this, please ignore this email.
 
 Best regards,
 The Crumbs Team"""
-            
-            try:
-                send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    fail_silently=False,
-                )
-            except Exception as e:
-                # Log the error but don't reveal it to the user
-                print(f"Error sending password reset email: {e}")
+
+            # Send email asynchronously using Celery
+            send_password_reset_email_task.delay(subject, message, user.email)
 
         return Response(
             {
@@ -262,29 +253,31 @@ class PasswordResetConfirmView(APIView):
 
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         try:
-            user = serializer.save()
-            
+            serializer.save()
             return Response(
                 {
                     'message': 'Password has been reset successfully. You can now login with your new password.'
                 },
                 status=status.HTTP_200_OK,
             )
-        except Exception as e:
+        except Exception:
             return Response(
                 {'error': 'An error occurred while resetting your password.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 
+# ─── Cart & Wishlist ───────────────────────────────────────────────────────────
+
 from .models import CartItem, WishlistItem
 from .serializers import CartItemSerializer, WishlistItemSerializer
 from catalog.models import Product
+
 
 class CartSyncView(APIView):
     permission_classes = [IsAuthenticated]
@@ -297,15 +290,11 @@ class CartSyncView(APIView):
 
     def post(self, request):
         """Merge local guest cart into DB — used on fresh login only.
-        
+
         Merge strategy: additive (x + y).
         - x = quantity already in the user's DB cart from a previous session.
         - y = quantity the user added as a guest before logging in.
         - Result = x + y, preserving both the saved account cart and the guest additions.
-        
-        This is safe because after sync the frontend overwrites localStorage with the 
-        server's merged result, and on logout localStorage is cleared. So a re-login 
-        will never see stale local items to double-add.
         """
         local_items = request.data.get('items', [])
         user = request.user
@@ -321,7 +310,6 @@ class CartSyncView(APIView):
                     user=user, product=product, variant=variant,
                     defaults={'quantity': quantity}
                 )
-                # Additive merge: DB quantity + guest quantity = combined total
                 if not created:
                     cart_item.quantity += quantity
                     cart_item.save()
@@ -331,6 +319,7 @@ class CartSyncView(APIView):
         cart_items = CartItem.objects.filter(user=user)
         serializer = CartItemSerializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CartAddView(APIView):
     permission_classes = [IsAuthenticated]
@@ -359,6 +348,7 @@ class CartAddView(APIView):
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class CartRemoveView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -368,12 +358,14 @@ class CartRemoveView(APIView):
         CartItem.objects.filter(user=request.user, product_id=product_id, variant=variant).delete()
         return Response({'message': 'Item removed'}, status=status.HTTP_200_OK)
 
+
 class CartClearView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         CartItem.objects.filter(user=request.user).delete()
         return Response({'message': 'Cart cleared'}, status=status.HTTP_200_OK)
+
 
 class WishlistSyncView(APIView):
     permission_classes = [IsAuthenticated]
@@ -398,6 +390,7 @@ class WishlistSyncView(APIView):
         wishlist_items = WishlistItem.objects.filter(user=user).values_list('product_id', flat=True)
         return Response(list(wishlist_items), status=status.HTTP_200_OK)
 
+
 class WishlistToggleView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -414,6 +407,7 @@ class WishlistToggleView(APIView):
         except Product.DoesNotExist:
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class WishlistClearView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -421,9 +415,13 @@ class WishlistClearView(APIView):
         WishlistItem.objects.filter(user=request.user).delete()
         return Response({'message': 'Wishlist cleared'}, status=status.HTTP_200_OK)
 
+
+# ─── Address ──────────────────────────────────────────────────────────────────
+
 from rest_framework import generics
 from .models import Address
 from .serializers import AddressSerializer
+
 
 class AddressListCreateView(generics.ListCreateAPIView):
     serializer_class = AddressSerializer
@@ -434,6 +432,7 @@ class AddressListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 class AddressRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AddressSerializer

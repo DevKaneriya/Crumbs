@@ -24,14 +24,16 @@ export class ProductSwiper implements OnInit {
     private catalogService: CatalogService
   ) { }
 
+  isLoading = true;
+
   ngOnInit() {
     this.catalogService.getProducts().subscribe({
       next: (products) => {
         this.products = products;
-        // Initialize carousel after products are loaded
+        this.isLoading = false;
         setTimeout(() => this.initializeCarousel(), 100);
       },
-      error: (err) => console.error('Error loading products:', err)
+      error: (err) => { console.error('Error loading products:', err); this.isLoading = false; }
     });
   }
 

@@ -3,6 +3,8 @@
   overflow: hidden;
   padding: 1.5rem 0;
   background-color: var(--background-color);
+  /* Reserve exact height matching both skeleton and loaded content to prevent jerking */
+  min-height: 198px;
 }
 
 /* Base: Mobile = Horizontal scrollable slider */
@@ -27,14 +29,18 @@
   flex-shrink: 0;
   text-align: center;
   text-decoration: none;
-
   scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .category-img {
   cursor: pointer;
   width: 120px;
-  border-radius: 50%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50% !important;
   margin-bottom: 8px;
 }
 
@@ -43,21 +49,62 @@
   font-weight: 700;
   margin: 0;
   color: black;
+  line-height: 1.2;
 }
 
-/* ✅ Desktop ≥1000px: Flex row with gap */
+/* ✅ Desktop ≥1160px: Flex row centered */
 @media (min-width: 1160px) {
   .category-slider {
     justify-content: center;
   }
 }
 
-@media (max-width: 768px){
+@media (max-width: 768px) {
+  .category-slider-wrapper {
+    min-height: 172px;
+  }
 
-  .category-item{
+  .category-item {
     width: 100px;
   }
-  .category-img{
+
+  .category-img {
     width: 100px;
+    height: 100px;
   }
 }
+
+/* ─── Skeleton shimmer — defined locally because app.css is ViewEncapsulation scoped ─── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #e0d8d5 25%, #ede8e6 50%, #e0d8d5 75%);
+  background-size: 600px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  margin-bottom: 8px; /* Match category-img */
+}
+
+.skeleton-label {
+  height: 14px;
+  width: 70%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e0d8d5 25%, #ede8e6 50%, #e0d8d5 75%);
+  background-size: 600px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  margin-top: 4px; /* Match text height offset */
+}
+
+@media (max-width: 768px) {
+  .skeleton-icon {
+    width: 100px;
+    height: 100px;
+  }
+}
+

@@ -14,6 +14,7 @@ import { Category } from '../../models/catalog.models';
 export class ProductTemplate implements OnInit {
 
   categories: Category[] = [];
+  isLoading = true;
 
   constructor(
     private router: Router,
@@ -21,11 +22,16 @@ export class ProductTemplate implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.catalogService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading categories:', err)
+      error: (err) => {
+        console.error('Error loading categories:', err);
+        this.isLoading = false;
+      }
     });
   }
 
