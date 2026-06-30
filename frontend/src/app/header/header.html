@@ -1,4 +1,4 @@
-﻿<div class="header-main" [ngClass]="{'no-scroll': isMenuOpen}">
+<div class="header-main" [ngClass]="{'no-scroll': isMenuOpen}">
   <div class="offer">
     Our Biggest Deal! Get extra FLAT 25% off 1599+ (GET25), FLAT 15% off 999+ (GET15), FLAT 10% off 599+ (GET10), Free
     shipping 599+
@@ -19,17 +19,25 @@
 
     <div class="nav-icons">
 
-      <i class="fas fa-search" (click)="openSearch()"></i>
+      <div class="tooltip-container" data-tooltip="Search">
+        <i class="fas fa-search" (click)="openSearch()"></i>
+      </div>
 
-      <i id="hide" class="fas fa-user" (click)="navigate('/account')"></i>
+      <div class="tooltip-container" data-tooltip="My Account" id="hide">
+        <i class="fas fa-user" (click)="navigate('/account')"></i>
+      </div>
 
-      <i id="hide" class="fas fa-heart" (click)="navigate('/wishlist')">
-        <span class="badge" *ngIf="wishlistService.wishlistCount() > 0">{{wishlistService.wishlistCount()}}</span>
-      </i>
+      <div class="tooltip-container" data-tooltip="Wishlist" id="hide">
+        <i class="fas fa-heart" (click)="navigate('/wishlist')">
+          <span class="badge" *ngIf="wishlistService.wishlistCount() > 0">{{wishlistService.wishlistCount()}}</span>
+        </i>
+      </div>
 
-      <i class="fas fa-shopping-bag" (click)="toggleCart()">
-        <span class="badge" *ngIf="cartService.cartCount() > 0">{{cartService.cartCount()}}</span>
-      </i>
+      <div class="tooltip-container" data-tooltip="Cart">
+        <i class="fas fa-shopping-bag" (click)="toggleCart()">
+          <span class="badge" *ngIf="cartService.cartCount() > 0">{{cartService.cartCount()}}</span>
+        </i>
+      </div>
 
 
       <div class="cart-sidebar" [class.active]="cartService.isCartOpen()">

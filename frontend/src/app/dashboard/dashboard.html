@@ -1,37 +1,142 @@
-﻿<app-header></app-header>
+<app-header></app-header>
 
-
-<div class="main">
-    <div class="header">
-        My Account
+<div class="main-dashboard-container">
+  <div class="dashboard-header-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+      <h1 class="welcome-text">Hello, {{ user?.first_name || 'Valued Customer' }}!</h1>
+      <p class="subtitle-text">Welcome back to your Crumbs account dashboard. Manage your orders, addresses, and wishlist here.</p>
     </div>
-    <div class="body">
-       <div class="left">
-            <ul>
-                <li>
-                    <a href="/account">My Orders</a>
-                </li>
-                <li>
-                    <a href="/account/address">Address</a>
-                </li>
-                <li>
-                    <a href="/wishlist">Wishlist</a>
-                </li>
-                <li>
-                    <button class="logout" (click)="logout()" [disabled]="isLoggingOut">
-                        {{ isLoggingOut ? 'Logging Out...' : 'Log Out' }}
-                    </button>
-                </li>
-            </ul>
-            <div *ngIf="logoutError" class="error">{{ logoutError }}</div>
-       </div>
-       <div class="right">
+  </div>
 
-       </div> 
-    </div>
+  <div class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dashboard-sidebar">
+      <div class="user-profile-summary">
+        <div class="avatar-circle">
+          {{ (user?.first_name?.charAt(0) || 'U').toUpperCase() }}{{ (user?.last_name?.charAt(0) || '').toUpperCase() }}
+        </div>
+        <div class="user-details">
+          <h3 class="user-name">{{ user?.first_name }} {{ user?.last_name }}</h3>
+          <p class="user-email">{{ user?.email }}</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="nav-item active">
+            <a href="/account">
+              <i class="fas fa-shopping-bag"></i>
+              <span>My Orders</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/account/address">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Saved Addresses</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/wishlist">
+              <i class="fas fa-heart"></i>
+              <span>My Wishlist</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="logout()" [disabled]="isLoggingOut">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>{{ isLoggingOut ? 'Logging Out...' : 'Log Out' }}</span>
+        </button>
+        <div *ngIf="logoutError" class="logout-error-text">{{ logoutError }}</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+      <!-- Quick Stats Grid -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrapper orders-icon">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Orders</span>
+            <span class="stat-value">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper wishlist-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Wishlist Items</span>
+            <span class="stat-value">{{ wishlistItemsCount }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper address-icon">
+            <i class="fas fa-map-marked-alt"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Saved Addresses</span>
+            <span class="stat-value">{{ addresses.length }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Dashboard Panels -->
+      <div class="content-panels">
+        <!-- Orders History Panel -->
+        <div class="panel-card orders-panel">
+          <div class="panel-header">
+            <h2>Order History</h2>
+          </div>
+          <div class="panel-body">
+            <!-- Empty State for Orders -->
+            <div class="empty-orders-state">
+              <div class="empty-icon-circle">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <h3>No Orders Placed Yet</h3>
+              <p>Looks like you haven't placed any orders with us. Explore our freshly made products and delicious treats today!</p>
+              <a href="/collections" class="shop-now-btn">Start Shopping</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Default Address Panel -->
+        <div class="panel-card address-panel">
+          <div class="panel-header">
+            <h2>Default Shipping Address</h2>
+            <a href="/account/address" class="manage-link">Manage</a>
+          </div>
+          <div class="panel-body">
+            <div class="default-address-display" *ngIf="defaultAddress">
+              <div class="address-recipient">
+                {{ defaultAddress.first_name }} {{ defaultAddress.last_name }}
+                <span class="badge-default">Default</span>
+              </div>
+              <div class="address-details">
+                <p>{{ defaultAddress.address }}</p>
+                <p *ngIf="defaultAddress.apartment">{{ defaultAddress.apartment }}</p>
+                <p>{{ defaultAddress.city }}, {{ defaultAddress.state }} - {{ defaultAddress.pin_code }}</p>
+                <p class="phone-number"><i class="fas fa-phone-alt"></i> {{ defaultAddress.phone_no }}</p>
+              </div>
+            </div>
+            <div class="empty-address-state" *ngIf="!defaultAddress">
+              <p>You haven't set a default shipping address yet.</p>
+              <a href="/account/address" class="add-address-btn"><i class="fas fa-plus"></i> Add Address</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
-
 <app-footer></app-footer>
-
-

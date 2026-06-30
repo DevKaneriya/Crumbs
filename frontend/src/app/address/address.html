@@ -1,162 +1,244 @@
 <app-header></app-header>
 
-
-<div class="main">
-    <div class="header">
-        Manage Addresses
+<div class="main-dashboard-container">
+  <!-- Banner header -->
+  <div class="dashboard-header-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+      <h1 class="welcome-text">Manage Saved Addresses</h1>
+      <p class="subtitle-text">Add, edit, or delete shipping addresses for your orders. Set a default address for faster checkout.</p>
     </div>
-    <div class="body">
-        <div class="left">
-            <ul>
-                <li>
-                    <a href="/account">My Orders</a>
-                </li>
-                <li>
-                    <a href="/account/address">Address</a>
-                </li>
-                <li>
-                    <a href="/wishlist">Wishlist</a>
-                </li>
-                <li>
-                    <button class="logout" (click)="logout()">Log Out</button>
-                </li>
-            </ul>
+  </div>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar Navigation (Same as dashboard for seamless experience) -->
+    <aside class="dashboard-sidebar">
+      <div class="user-profile-summary">
+        <div class="avatar-circle">
+          {{ (user?.first_name?.charAt(0) || 'U').toUpperCase() }}{{ (user?.last_name?.charAt(0) || '').toUpperCase() }}
         </div>
-        <div class="right">
+        <div class="user-details">
+          <h3 class="user-name">{{ user?.first_name }} {{ user?.last_name }}</h3>
+          <p class="user-email">{{ user?.email }}</p>
+        </div>
+      </div>
 
-            <div class="address">
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="nav-item">
+            <a href="/account">
+              <i class="fas fa-shopping-bag"></i>
+              <span>My Orders</span>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="/account/address">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Saved Addresses</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/wishlist">
+              <i class="fas fa-heart"></i>
+              <span>My Wishlist</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-                <button class="add-new" (click)="toggleAdd()" *ngIf="!addMode">ADD NEW ADDRESS</button>
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Log Out</span>
+        </button>
+      </div>
+    </aside>
 
-                <div *ngIf="addMode" [formGroup]="addressForm" class="form-card animate-popup">
-
-                    <div class="form-header">
-                        Add New Address
-                    </div>
-
-                    <div class="fl">
-                        <label>First Name
-                            <input formControlName="first_name" placeholder="First Name">
-                        </label>
-                        <label>Last Name
-                            <input formControlName="last_name" placeholder="Last Name">
-                        </label>
-                    </div>
-                    <label>Address
-                        <input formControlName="address" placeholder="Address">
-                    </label>
-                    <label>Apartment, suite, etc.
-                        <input formControlName="apartment" placeholder="Apartment, suite, etc.">
-                    </label>
-                    <label>City
-                        <input formControlName="city" placeholder="City">
-                    </label>
-                    <label>Province
-                        <input formControlName="state" placeholder="State">
-                    </label>
-                    <div class="fl">
-                        <label>Pin Code
-                            <input formControlName="pin_code" placeholder="Pin Code">
-                        </label>
-                        <label>Phone No
-                            <input formControlName="phone_no" placeholder="Phone No">
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <input id="checkbox" type="checkbox" formControlName="is_default">
-                        <label>Set as default</label>
-                    </div>
-
-                    <div class="form-button">
-                        <button (click)="saveNew()">Save</button>
-                        <button (click)="toggleAdd()">Cancel</button>
-                    </div>
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+      <div class="panel-card address-list-panel">
+        <div class="panel-header">
+          <h2>Your Shipping Addresses</h2>
+          <button class="add-new-btn-top" (click)="toggleAdd()" *ngIf="!addMode">
+            <i class="fas fa-plus"></i> Add New Address
+          </button>
+        </div>
+        
+        <div class="panel-body">
+          <!-- Add New Address Form Modal/Section -->
+          <div *ngIf="addMode" [formGroup]="addressForm" class="form-container-card animate-popup">
+            <div class="form-card-header">
+              <h3>Add New Address</h3>
+              <button class="close-btn" (click)="toggleAdd()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group-row">
+                <div class="form-group">
+                  <label>First Name *</label>
+                  <input formControlName="first_name" placeholder="First Name">
                 </div>
-
-                <div class="new-overlay" *ngIf="addMode" (click)="toggleAdd()"></div>
-
-
-                <div class="wrapper">
-                    <div class="empty-state" *ngIf="addresses.length === 0 && !addMode">
-                        <p>You have no saved addresses yet.</p>
-                        <button class="add-new-small" (click)="toggleAdd()">Add an Address</button>
-                    </div>
-                    <div class="width" *ngFor="let addr of addresses; let i = index">
-
-                        <div class="add-card" *ngIf="editIndex !== i">
-                            <span class="default" *ngIf="addr.is_default"> Default</span>
-                            <div class="card-head">
-                                {{addr.first_name}} {{addr.last_name}}
-
-                            </div>
-                            <div class="card-body">
-                                <div>{{addr.address}} {{addr.apartment}}
-                                    {{addr.city}}, {{addr.state}} - {{addr.pin_code}}</div>
-                                <div>Phone: {{addr.phone_no}}</div>
-                            </div>
-
-
-                            <div class="button">
-                                <button (click)="editAddress(i)">EDIT</button>
-                                <button (click)="deleteAddress(addr.id!)">DELETE</button>
-                            </div>
-                        </div>
-
-
-                        <div *ngIf="editIndex === i" [formGroup]="addressForm" class="form-card animate-popup">
-
-                            <div class="form-header">
-                                Edit Address
-                            </div>
-
-                            <div class="fl">
-                                <label>First Name
-                                    <input formControlName="first_name" placeholder="First Name">
-                                </label>
-                                <label>Last Name
-                                    <input formControlName="last_name" placeholder="Last Name">
-                                </label>
-                            </div>
-                            <label>Address
-                                <input formControlName="address" placeholder="Address">
-                            </label>
-                            <label>Apartment, suite, etc.
-                                <input formControlName="apartment" placeholder="Apartment, suite, etc.">
-                            </label>
-                            <label>City
-                                <input formControlName="city" placeholder="City">
-                            </label>
-                            <label>Province
-                                <input formControlName="state" placeholder="State">
-                            </label>
-                            <div class="fl">
-                                <label>Pin Code
-                                    <input formControlName="pin_code" placeholder="Pin Code">
-                                </label>
-                                <label>Phone No
-                                    <input formControlName="phone_no" placeholder="Phone No">
-                                </label>
-                            </div>
-                            <div class="checkbox">
-                                <input id="checkbox" type="checkbox" formControlName="is_default">
-                                <label>Set as default</label>
-                            </div>
-                            <div class="form-button">
-                                <button (click)="updateAddress(addr.id!)">Update</button>
-                                <button (click)="cancelEdit()">Cancel</button>
-                            </div>
-                        </div>
-
-                        <div class="edit-overlay" *ngIf="editIndex === i" (click)="cancelEdit()"></div>
-                    </div>
-
+                <div class="form-group">
+                  <label>Last Name *</label>
+                  <input formControlName="last_name" placeholder="Last Name">
                 </div>
-
+              </div>
+              
+              <div class="form-group">
+                <label>Street Address *</label>
+                <input formControlName="address" placeholder="House number and street name">
+              </div>
+              
+              <div class="form-group">
+                <label>Apartment, suite, unit, etc. (optional)</label>
+                <input formControlName="apartment" placeholder="Apartment, suite, unit, etc.">
+              </div>
+              
+              <div class="form-group-row">
+                <div class="form-group">
+                  <label>City *</label>
+                  <input formControlName="city" placeholder="City">
+                </div>
+                <div class="form-group">
+                  <label>State / Province *</label>
+                  <input formControlName="state" placeholder="State">
+                </div>
+              </div>
+              
+              <div class="form-group-row">
+                <div class="form-group">
+                  <label>Postal / Pin Code *</label>
+                  <input formControlName="pin_code" placeholder="Pin Code">
+                </div>
+                <div class="form-group">
+                  <label>Phone Number *</label>
+                  <input formControlName="phone_no" placeholder="Phone Number">
+                </div>
+              </div>
+              
+              <div class="form-checkbox-group">
+                <input id="is_default_add" type="checkbox" formControlName="is_default" class="custom-checkbox">
+                <label for="is_default_add">Set as default shipping address</label>
+              </div>
             </div>
 
-        </div>
-    </div>
-</div>
+            <div class="form-actions">
+              <button class="btn-save" (click)="saveNew()">Save Address</button>
+              <button class="btn-cancel" (click)="toggleAdd()">Cancel</button>
+            </div>
+          </div>
 
+          <div class="modal-overlay" *ngIf="addMode" (click)="toggleAdd()"></div>
+
+          <!-- Address Grid Cards -->
+          <div class="addresses-grid" [hidden]="addMode">
+            <!-- Empty state -->
+            <div class="empty-state-card" *ngIf="addresses.length === 0">
+              <div class="empty-icon">
+                <i class="fas fa-map-marked"></i>
+              </div>
+              <h3>No Saved Addresses</h3>
+              <p>You haven't added any shipping addresses yet. Save your address now for a quicker checkout experience next time.</p>
+              <button class="add-new-btn-empty" (click)="toggleAdd()">
+                <i class="fas fa-plus"></i> Add Address
+              </button>
+            </div>
+
+            <!-- Address Card Items -->
+            <div class="address-item-card-wrapper" *ngFor="let addr of addresses; let i = index">
+              <!-- Regular Display Mode -->
+              <div class="address-card" *ngIf="editIndex !== i">
+                <span class="badge-default-label" *ngIf="addr.is_default">Default</span>
+                <div class="recipient-name">
+                  <i class="fas fa-user-circle"></i>
+                  {{ addr.first_name }} {{ addr.last_name }}
+                </div>
+                <div class="address-text">
+                  <p class="street">{{ addr.address }}</p>
+                  <p class="apartment" *ngIf="addr.apartment">{{ addr.apartment }}</p>
+                  <p class="city-state">{{ addr.city }}, {{ addr.state }} - {{ addr.pin_code }}</p>
+                  <p class="phone"><i class="fas fa-phone-alt"></i> {{ addr.phone_no }}</p>
+                </div>
+                <div class="card-actions">
+                  <button class="action-edit" (click)="editAddress(i)">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button class="action-delete" (click)="deleteAddress(addr.id!)">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </div>
+              </div>
+
+              <!-- Edit Address Mode Form -->
+              <div *ngIf="editIndex === i" [formGroup]="addressForm" class="form-container-card animate-popup edit-form-card">
+                <div class="form-card-header">
+                  <h3>Edit Address</h3>
+                  <button class="close-btn" (click)="cancelEdit()"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div class="form-grid">
+                  <div class="form-group-row">
+                    <div class="form-group">
+                      <label>First Name *</label>
+                      <input formControlName="first_name" placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                      <label>Last Name *</label>
+                      <input formControlName="last_name" placeholder="Last Name">
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Street Address *</label>
+                    <input formControlName="address" placeholder="House number and street name">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Apartment, suite, unit, etc. (optional)</label>
+                    <input formControlName="apartment" placeholder="Apartment, suite, unit, etc.">
+                  </div>
+                  
+                  <div class="form-group-row">
+                    <div class="form-group">
+                      <label>City *</label>
+                      <input formControlName="city" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                      <label>State / Province *</label>
+                      <input formControlName="state" placeholder="State">
+                    </div>
+                  </div>
+                  
+                  <div class="form-group-row">
+                    <div class="form-group">
+                      <label>Postal / Pin Code *</label>
+                      <input formControlName="pin_code" placeholder="Pin Code">
+                    </div>
+                    <div class="form-group">
+                      <label>Phone Number *</label>
+                      <input formControlName="phone_no" placeholder="Phone Number">
+                    </div>
+                  </div>
+                  
+                  <div class="form-checkbox-group">
+                    <input id="is_default_edit" type="checkbox" formControlName="is_default" class="custom-checkbox">
+                    <label for="is_default_edit">Set as default shipping address</label>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn-save" (click)="updateAddress(addr.id!)">Update Address</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </div>
+              
+              <div class="modal-overlay" *ngIf="editIndex === i" (click)="cancelEdit()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
 
 <app-footer></app-footer>

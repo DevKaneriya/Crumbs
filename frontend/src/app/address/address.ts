@@ -21,6 +21,7 @@ export class AddressComponent implements OnInit {
   editIndex: number | null = null;
   addressForm!: FormGroup;
   length: number | null = null;
+  user: any = null;
   
   constructor(
     public auth: Auth,
@@ -30,6 +31,17 @@ export class AddressComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/account/login'], { 
+        queryParams: { returnUrl: '/account/address' }
+      });
+      return;
+    }
+
+    this.auth.currentUser$.subscribe(user => {
+      this.user = user;
+    });
+
     this.loadAddresses();
     this.initForm();
   }
