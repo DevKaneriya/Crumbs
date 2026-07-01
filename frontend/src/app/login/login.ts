@@ -1,5 +1,4 @@
-﻿import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +9,7 @@ import { Footer } from "../footer/footer";
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Header, Footer],
+  imports: [FormsModule, RouterModule, Header, Footer],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -22,7 +21,7 @@ export class Login implements OnInit {
   errorMessage = '';
   successMessage = '';
   isLoggingOut = false;
-  private returnUrl: string = '/account';
+  private returnUrl: string = '/';
 
   constructor(
     public auth: Auth,
@@ -32,7 +31,7 @@ export class Login implements OnInit {
 
   ngOnInit() {
     // Get return URL from query params or default to /account
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/account';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   login() {

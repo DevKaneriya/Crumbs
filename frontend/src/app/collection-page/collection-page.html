@@ -4,25 +4,31 @@
     <div class="w-100 text-center">
         <div class="header mb-4">Shop By Category</div>
 
-        <!-- Skeleton — stays in DOM, just hidden -->
-        <div class="category-slider" [hidden]="!isLoading">
-            <div class="category-item" *ngFor="let i of [1,2,3,4,5,6,7,8,9]">
-                <div class="category-box">
-                    <div class="skeleton skeleton-img"></div>
-                </div>
-                <div class="skeleton skeleton-name mt-3"></div>
+        @if (isLoading) {
+            <!-- Skeleton -->
+            <div class="category-slider">
+                @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+                    <div class="category-item">
+                        <div class="category-box">
+                            <div class="skeleton skeleton-img"></div>
+                        </div>
+                        <div class="skeleton skeleton-name mt-3"></div>
+                    </div>
+                }
             </div>
-        </div>
-
-        <!-- Actual categories — stays in DOM, just hidden -->
-        <div class="category-slider" [hidden]="isLoading">
-            <div class="category-item" *ngFor="let item of categories" (click)="navigateToCategory(item.route)">
-                <div class="category-box shadow-sm overflow-hidden">
-                    <img [src]="item.image" alt="{{item.name}}" class="img-fluid w-100" />
-                </div>
-                <div class="name pt-3">{{ item.name }}</div>
+        } @else {
+            <!-- Actual categories -->
+            <div class="category-slider">
+                @for (item of categories; track item.route) {
+                    <div class="category-item" (click)="navigateToCategory(item.route)">
+                        <div class="category-box shadow-sm overflow-hidden">
+                            <img [src]="item.image" alt="{{ item.name }}" class="img-fluid w-100" />
+                        </div>
+                        <div class="name pt-3">{{ item.name }}</div>
+                    </div>
+                }
             </div>
-        </div>
+        }
     </div>
 </div>
 

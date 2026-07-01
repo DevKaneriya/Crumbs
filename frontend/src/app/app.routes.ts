@@ -16,10 +16,12 @@ import { AddressComponent } from './address/address';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { ResetPassword } from './reset-password/reset-password';
 import { authGuard } from '../guards/auth.guard';
+import { adminGuard } from '../guards/admin.guard';
 import { CustomizedOrder } from './customized-order/customized-order';
 import { TrackOrder } from './track-order/track-order';
 import { ReturnRefund } from './return-refund/return-refund';
 import { CheckoutComponent } from './checkout/checkout';
+import { AdminOrders } from './admin-orders/admin-orders';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -38,6 +40,9 @@ export const routes: Routes = [
     { path: 'account/forgot-password', component: ForgotPassword },
     { path: 'account/reset-password', component: ResetPassword },
 
+    // Store owner dashboard
+    { path: 'admin', component: AdminOrders, canActivate: [adminGuard] },
+
     { path: 'wishlist', component: WishlistPage },
 
     {
@@ -47,7 +52,6 @@ export const routes: Routes = [
             { path: ':route', component: BlogContent },
         ]
     },
-
 
     {
         path: 'collections',

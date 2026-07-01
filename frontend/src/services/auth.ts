@@ -12,6 +12,7 @@ interface AuthUser {
   name: string;
   email: string;
   username: string;
+  is_staff: boolean;
 }
 
 interface AuthResponse {
@@ -157,6 +158,10 @@ export class Auth {
 
   isLoggedIn() {
     return !!this.currentUserSubject.value;
+  }
+
+  isStaff(): boolean {
+    return this.currentUserSubject.value?.is_staff === true;
   }
 
   isBrowser(): boolean {

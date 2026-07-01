@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Wishlistservice } from '../../services/wishlistservice';
 import { CatalogService } from '../../services/catalog.service';
-import { ProductList, Category } from '../../models/catalog.models';
+import { Cartservice } from '../../services/cartservice';
+import { ProductList, ProductVariant, Category } from '../../models/catalog.models';
 
 @Component({
   selector: 'app-collection-category',
@@ -22,11 +23,15 @@ export class CollectionCategory implements OnInit {
   currentCategory: Category | null = null;
   isLoading = true;
 
+  // Track which product IDs were just added (for the "✓ Added" flash)
+  addedProductIds = new Set<number>();
+
   constructor(
     private activeRoute: ActivatedRoute,
     private router: Router,
     public wishlistService: Wishlistservice,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private cartService: Cartservice,
   ) { }
 
   navigate(slug: string) {
@@ -40,37 +45,21 @@ export class CollectionCategory implements OnInit {
       this.categoriesId = params.get('route');
 
       if (this.categoriesId === 'all-products') {
-        // Load all products
         this.catalogService.getProducts().subscribe({
-          next: (products) => {
-            this.filteredProducts = products;
-            this.isLoading = false;
-          },
+          next: (products) => { this.filteredProducts = products; this.isLoading = false; },
           error: (err) => { console.error('Error loading products:', err); this.isLoading = false; }
         });
-        
-        // Load the "all-products" category info
         this.catalogService.getCategory('all-products').subscribe({
-          next: (category) => {
-            this.currentCategory = category;
-          },
+          next: (category) => { this.currentCategory = category; },
           error: (err) => console.error('Error loading category:', err)
         });
       } else if (this.categoriesId) {
-        // Load products for specific category
         this.catalogService.getProducts({ category: this.categoriesId }).subscribe({
-          next: (products) => {
-            this.filteredProducts = products;
-            this.isLoading = false;
-          },
+          next: (products) => { this.filteredProducts = products; this.isLoading = false; },
           error: (err) => { console.error('Error loading products:', err); this.isLoading = false; }
         });
-        
-        // Load category info
         this.catalogService.getCategory(this.categoriesId).subscribe({
-          next: (category) => {
-            this.currentCategory = category;
-          },
+          next: (category) => { this.currentCategory = category; },
           error: (err) => console.error('Error loading category:', err)
         });
       } else {
@@ -79,15 +68,36 @@ export class CollectionCategory implements OnInit {
     });
   }
 
+  /** First in-stock variant, sorted by price ascending (API already sorts by price). */
+  firstInStockVariant(product: ProductList): ProductVariant | null {
+    return product.variants.find(v => v.in_stock) ?? null;
+  }
 
-  toggleWishlist(product: any, event: Event) {
+  /** True only when ALL variants are out of stock. */
+  isProductOutOfStock(product: ProductList): boolean {
+    return product.variants.length > 0 && product.variants.every(v => !v.in_stock);
+  }
+
+  addToCart(product: ProductList, event: Event): void {
+    event.stopPropagation(); // don't navigate to product page
+    const variant = this.firstInStockVariant(product);
+    if (!variant) return; // button is disabled anyway, but guard here too
+    this.cartService.addToCart(product.id, variant.weight, 1);
+    // Flash "Added" state for 1.5s
+    this.addedProductIds.add(product.id);
+    setTimeout(() => this.addedProductIds.delete(product.id), 1500);
+  }
+
+  wasJustAdded(product: ProductList): boolean {
+    return this.addedProductIds.has(product.id);
+  }
+
+  toggleWishlist(product: ProductList, event: Event) {
     event.stopPropagation();
     this.wishlistService.toggleWishlist(product.id);
   }
 
-  isInWishlist(product: any) {
+  isInWishlist(product: ProductList) {
     return this.wishlistService.isInWishlist(product.id);
   }
-
-
 }

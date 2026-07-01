@@ -59,3 +59,19 @@ class OrderItem(models.Model):
 
     def get_subtotal(self):
         return self.quantity * self.price_at_purchase
+
+
+class OrderStatusHistory(models.Model):
+    """Audit trail of every status change on an order."""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_history')
+    old_status = models.CharField(max_length=20)
+    new_status = models.CharField(max_length=20)
+    note = models.TextField(blank=True)          # internal owner note
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-changed_at']
+
+    def __str__(self):
+        return f"Order #{self.order.id}: {self.old_status} → {self.new_status}"

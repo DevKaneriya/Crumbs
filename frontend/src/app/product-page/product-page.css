@@ -209,6 +209,34 @@
   border-color: #1a1a1a;
 }
 
+/* Out-of-stock size button */
+.size-btn.out-of-stock-btn {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  position: relative;
+  text-decoration: line-through;
+  text-decoration-color: #9ca3af;
+}
+
+.size-btn.out-of-stock-btn:hover {
+  border-color: #d1d5db;
+}
+
+/* Small "Out of Stock" label beneath the weight text inside the size button */
+.oos-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #ef4444;
+  text-decoration: none;
+  margin-top: 2px;
+  line-height: 1;
+}
+
 .price-section {
   margin-bottom: 24px;
   padding-bottom: 24px;
@@ -317,6 +345,19 @@
 
 .add-to-cart-btn:hover {
   background: #d55a6e;
+}
+
+/* Out-of-stock state for the main CTA */
+.add-to-cart-btn.out-of-stock-btn-main,
+.add-to-cart-btn.out-of-stock-btn-main:hover {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #d1d5db;
+  cursor: not-allowed;
+}
+
+.add-to-cart-btn:disabled {
+  cursor: not-allowed;
 }
 
 .action-links {

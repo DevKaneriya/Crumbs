@@ -42,6 +42,11 @@
                 <img [src]="product.images[0]?.image_path" class="img default" />
                 <img [src]="product.images[1]?.image_path" class="img hover" />
 
+                <!-- Out-of-stock overlay on image -->
+                <div class="oos-overlay" *ngIf="isProductOutOfStock(product)">
+                    <span class="oos-overlay-label">Out of Stock</span>
+                </div>
+
                 <button class="wishlist-btn" (click)="toggleWishlist(product, $event)">
                     <i class="fas fa-heart" [class.active]="wishlistService.isInWishlist(product.id)"></i>
                 </button>
@@ -50,16 +55,31 @@
             <div class="name">
                 {{product.name}}
             </div>
-            <div class="price">
-                <div class="discount">
-                    From Rs. {{product.variants[0].discounted_price | number:'1.2-2'}}
-                </div>
-                <div class="original">
-                    Rs. {{product.variants[0].original_price | number:'1.2-2'}}
+            <div class="price" *ngIf="firstInStockVariant(product) as v; else allOosPrice">
+                <div class="discount">From Rs. {{v.discounted_price | number:'1.2-2'}}</div>
+                <div class="original" *ngIf="+v.original_price > +v.discounted_price">
+                    Rs. {{v.original_price | number:'1.2-2'}}
                 </div>
             </div>
-            <button class="cart-button">
-                ADD TO CART
+            <ng-template #allOosPrice>
+                <div class="price">
+                    <div class="discount">Rs. {{product.variants[0].discounted_price | number:'1.2-2'}}</div>
+                </div>
+            </ng-template>
+
+            <button
+                class="cart-button"
+                [class.cart-button--oos]="isProductOutOfStock(product)"
+                [class.cart-button--added]="wasJustAdded(product)"
+                [disabled]="isProductOutOfStock(product)"
+                (click)="addToCart(product, $event)">
+                <ng-container *ngIf="isProductOutOfStock(product)">Out of Stock</ng-container>
+                <ng-container *ngIf="!isProductOutOfStock(product) && wasJustAdded(product)">
+                    <i class="fas fa-check"></i> Added!
+                </ng-container>
+                <ng-container *ngIf="!isProductOutOfStock(product) && !wasJustAdded(product)">
+                    ADD TO CART
+                </ng-container>
             </button>
 
         </div>

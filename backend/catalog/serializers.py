@@ -19,11 +19,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
-    """Serializer for ProductVariant model"""
+    """Serializer for ProductVariant model — includes in_stock for frontend"""
     
     class Meta:
         model = ProductVariant
-        fields = ['id', 'weight', 'original_price', 'discounted_price']
+        fields = ['id', 'weight', 'original_price', 'discounted_price', 'in_stock']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -59,3 +59,23 @@ class CategoryWithProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'route', 'name', 'text', 'icon', 'image', 'content', 'products']
+
+
+# ---------------------------------------------------------------------------
+# Admin stock serializer
+# ---------------------------------------------------------------------------
+
+class AdminStockVariantSerializer(serializers.ModelSerializer):
+    """Serializer for admin stock management — shows product name alongside variant"""
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    product_short = serializers.CharField(source='product.short', read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = ['id', 'product_name', 'product_short', 'weight', 'original_price', 'discounted_price', 'in_stock']
+
+
+class AdminStockToggleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariant
+        fields = ['in_stock']

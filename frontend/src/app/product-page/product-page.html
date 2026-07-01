@@ -85,9 +85,13 @@
                 type="button"
                 class="size-btn"
                 [class.selected]="selectedWeight?.weight === variant.weight"
+                [class.out-of-stock-btn]="!variant.in_stock"
+                [disabled]="!variant.in_stock"
                 (click)="selectWeight(variant)"
+                [title]="variant.in_stock ? variant.weight : variant.weight + ' — Out of Stock'"
               >
                 {{ variant.weight }}
+                <span class="oos-label" *ngIf="!variant.in_stock">Out of Stock</span>
               </button>
             </div>
           </div>
@@ -116,8 +120,11 @@
             </div>
           </div>
 
-          <button type="button" class="add-to-cart-btn" (click)="addToCart()">
-            Add to cart
+          <button type="button" class="add-to-cart-btn"
+            [class.out-of-stock-btn-main]="selectedWeight && !selectedWeight.in_stock"
+            [disabled]="!selectedWeight || !selectedWeight.in_stock"
+            (click)="addToCart()">
+            {{ selectedWeight && !selectedWeight.in_stock ? 'Out of Stock' : 'Add to cart' }}
           </button>
 
           <div class="action-links">

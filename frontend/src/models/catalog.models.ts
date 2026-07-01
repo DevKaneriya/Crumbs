@@ -28,6 +28,7 @@ export interface ProductVariant {
   weight: string;
   original_price: string;
   discounted_price: string;
+  in_stock: boolean;
 }
 
 // Product List Interface (lightweight for listings)

@@ -15,8 +15,12 @@
 
       <a routerLink="/account/forgot-password" class="forgot">Forgot Your Password?</a>
 
-      <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-      <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+      @if (errorMessage) {
+        <div class="error">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="success">{{ successMessage }}</div>
+      }
 
       <button class="submit" type="submit" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Signing In...' : 'Sign In' }}

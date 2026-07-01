@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Wishlistservice } from '../../services/wishlistservice';
 import { CatalogService } from '../../services/catalog.service';
-import { ProductList } from '../../models/catalog.models';
+import { Cartservice } from '../../services/cartservice';
+import { ProductList, ProductVariant } from '../../models/catalog.models';
 
 declare const $: any;
 
@@ -17,14 +18,19 @@ declare const $: any;
 export class ProductSwiper implements OnInit {
 
   products: ProductList[] = [];
+  isLoading = true;
+  isDragging = false;
+  mobileBreakpoint = 1025;
+
+  // Track which product IDs were just added (for the "✓ Added" flash)
+  addedProductIds = new Set<number>();
 
   constructor(
     private router: Router,
     public wishlistService: Wishlistservice,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private cartService: Cartservice,
   ) { }
-
-  isLoading = true;
 
   ngOnInit() {
     this.catalogService.getProducts().subscribe({
@@ -38,26 +44,43 @@ export class ProductSwiper implements OnInit {
   }
 
   navigate(slug: string) {
-
     if (this.isDragging) { this.isDragging = false; return; }
-
-    this.router.navigate(["/products", slug]).then(() => {
+    this.router.navigate(['/products', slug]).then(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
+  /** First in-stock variant (API already orders by price asc). */
+  firstInStockVariant(product: ProductList): ProductVariant | null {
+    return product.variants.find(v => v.in_stock) ?? null;
+  }
 
-  toggleWishlist(product: any, event: Event) {
+  /** True when every variant is out of stock. */
+  isProductOutOfStock(product: ProductList): boolean {
+    return product.variants.length > 0 && product.variants.every(v => !v.in_stock);
+  }
+
+  addToCart(product: ProductList, event: Event): void {
+    event.stopPropagation(); // prevent card click / carousel drag-navigate
+    const variant = this.firstInStockVariant(product);
+    if (!variant) return;
+    this.cartService.addToCart(product.id, variant.weight, 1);
+    this.addedProductIds.add(product.id);
+    setTimeout(() => this.addedProductIds.delete(product.id), 1500);
+  }
+
+  wasJustAdded(product: ProductList): boolean {
+    return this.addedProductIds.has(product.id);
+  }
+
+  toggleWishlist(product: ProductList, event: Event) {
     event.stopPropagation();
     this.wishlistService.toggleWishlist(product.id);
   }
 
-  isInWishlist(product: any) {
+  isInWishlist(product: ProductList) {
     return this.wishlistService.isInWishlist(product.id);
   }
-
-  isDragging = false;
-  mobileBreakpoint = 1025;
 
   private initializeCarousel() {
     $(".product-carousel").slick({
@@ -73,33 +96,20 @@ export class ProductSwiper implements OnInit {
       autoplay: true,
       autoplaySpeed: 3000,
       responsive: [
-        {
-          breakpoint: 1200,
-          settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false },
-        },
-        {
-          breakpoint: 767,
-          settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
-        },
-        {
-          breakpoint: 576,
-          settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false },
-        },
+        { breakpoint: 1200, settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false } },
+        { breakpoint: 767,  settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
+        { breakpoint: 576,  settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
       ],
     });
 
     if (window.innerWidth > this.mobileBreakpoint) {
-
       $(".product-carousel").on("mousedown touchstart", () => this.isDragging = false);
-      $(".product-carousel").on("mousemove touchmove", () => this.isDragging = true);
+      $(".product-carousel").on("mousemove touchmove",  () => this.isDragging = true);
     }
 
     $("#SliderArrowL").on("click", () => $(".product-carousel").slick("slickPrev"));
     $("#SliderArrowR").on("click", () => $(".product-carousel").slick("slickNext"));
   }
 
-  ngAfterViewInit() {
-    // Carousel initialization moved to ngOnInit after data loads
-  }
-
+  ngAfterViewInit() { /* carousel init moved to ngOnInit after data loads */ }
 }

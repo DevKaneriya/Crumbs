@@ -56,7 +56,8 @@ export class ProductPage implements OnInit {
             this.selectedProduct = product;
             this.imageList = product.images.filter(img => img !== undefined).map(img => img.image_path);
             this.selectedImage = this.imageList[0] ?? '';
-            this.selectedWeight = product.variants[0] ?? null;
+            // Default to first in-stock variant, fallback to first variant
+            this.selectedWeight = product.variants.find(v => v.in_stock) ?? product.variants[0] ?? null;
             this.currentIndex = 0;
             this.quantity = 1;
             this.activeTab = 'description';
@@ -111,6 +112,7 @@ export class ProductPage implements OnInit {
 
   addToCart(): void {
     if (!this.selectedWeight || !this.selectedProduct) return;
+    if (!this.selectedWeight.in_stock) return; // guard — should never reach here via UI
     this.cartService.addToCart(
       this.selectedProduct.id,
       this.selectedWeight.weight,

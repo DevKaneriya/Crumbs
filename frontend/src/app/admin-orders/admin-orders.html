@@ -1,0 +1,742 @@
+<div class="admin-shell">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/crumbs-favicon/android-chrome-192x192.png" alt="Crumbs" class="brand-icon" />
+      <div class="brand-text">
+        <span class="brand-name">Crumbs</span>
+        <span class="brand-sub">Admin Panel</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <button class="nav-link" [class.active]="activeTab==='dashboard'" (click)="setTab('dashboard')">
+        <i class="fas fa-chart-line"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-link" [class.active]="activeTab==='orders'" (click)="setTab('orders')">
+        <i class="fas fa-box"></i><span>Orders</span>
+        @if (stats && stats.pending > 0) {
+          <span class="nav-badge">{{ stats.pending }}</span>
+        }
+      </button>
+
+      <div class="nav-section-label">Catalog</div>
+      <button class="nav-link" [class.active]="activeTab==='stock'" (click)="setTab('stock')">
+        <i class="fas fa-cubes"></i><span>Stock</span>
+        @if (outOfStockCount > 0) {
+          <span class="nav-badge red">{{ outOfStockCount }}</span>
+        }
+      </button>
+
+      <div class="nav-section-label">People</div>
+      <button class="nav-link" [class.active]="activeTab==='customers'" (click)="setTab('customers')">
+        <i class="fas fa-users"></i><span>Customers</span>
+      </button>
+
+      <div class="nav-section-label">Tools</div>
+      <button class="nav-link" [class.active]="activeTab==='logs'" (click)="setTab('logs')">
+        <i class="fas fa-history"></i><span>Logs</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="nav-link" href="/" target="_blank">
+        <i class="fas fa-store"></i><span>View Store</span>
+      </a>
+      <a class="nav-link" href="/account">
+        <i class="fas fa-user-circle"></i><span>My Account</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="admin-main">
+
+    <!-- ════════════════════════════════════════════
+         TAB: DASHBOARD
+    ════════════════════════════════════════════ -->
+    @if (activeTab === 'dashboard') {
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Dashboard</h1>
+          <span class="topbar-breadcrumb">Business overview at a glance</span>
+        </div>
+        <div class="topbar-right">
+          <button class="btn-ghost" (click)="loadStats()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+      </header>
+
+      @if (statsLoading) {
+        <div class="tab-loading"><i class="fas fa-spinner fa-spin"></i> Loading stats…</div>
+      }
+
+      @if (!statsLoading && stats) {
+        <!-- KPI cards row 1 -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon blue"><i class="fas fa-shopping-bag"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val">{{ stats.total_orders }}</span>
+              <span class="kpi-lbl">Total Orders</span>
+            </div>
+            <div class="kpi-sub">+{{ stats.recent_orders }} last 30 days</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green"><i class="fas fa-rupee-sign"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val">₹{{ stats.total_revenue | number:'1.0-0' }}</span>
+              <span class="kpi-lbl">Total Revenue</span>
+            </div>
+            <div class="kpi-sub">₹{{ stats.recent_revenue | number:'1.0-0' }} last 30 days</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon purple"><i class="fas fa-users"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val">{{ stats.customers_with_orders }}</span>
+              <span class="kpi-lbl">Buying Customers</span>
+            </div>
+            <div class="kpi-sub">{{ stats.total_customers }} registered total</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon amber"><i class="fas fa-clock"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-val">{{ stats.pending }}</span>
+              <span class="kpi-lbl">Pending Orders</span>
+            </div>
+            <div class="kpi-sub">Awaiting processing</div>
+          </div>
+        </div>
+
+        <!-- Order status summary cards -->
+        <div class="section-title">Order Status Summary</div>
+        <div class="status-summary-row">
+          <div class="ss-card paid">
+            <div class="ss-num">{{ stats.paid }}</div>
+            <div class="ss-lbl">Paid</div>
+            <div class="ss-bar"><div class="ss-fill" [style.width.%]="stats.total_orders ? (stats.paid/stats.total_orders)*100 : 0"></div></div>
+          </div>
+          <div class="ss-card shipped">
+            <div class="ss-num">{{ stats.shipped }}</div>
+            <div class="ss-lbl">Shipped</div>
+            <div class="ss-bar"><div class="ss-fill" [style.width.%]="stats.total_orders ? (stats.shipped/stats.total_orders)*100 : 0"></div></div>
+          </div>
+          <div class="ss-card delivered">
+            <div class="ss-num">{{ stats.delivered }}</div>
+            <div class="ss-lbl">Delivered</div>
+            <div class="ss-bar"><div class="ss-fill" [style.width.%]="stats.total_orders ? (stats.delivered/stats.total_orders)*100 : 0"></div></div>
+          </div>
+          <div class="ss-card cancelled">
+            <div class="ss-num">{{ stats.cancelled }}</div>
+            <div class="ss-lbl">Cancelled</div>
+            <div class="ss-bar"><div class="ss-fill" [style.width.%]="stats.total_orders ? (stats.cancelled/stats.total_orders)*100 : 0"></div></div>
+          </div>
+        </div>
+
+        <!-- Bottom two-column: trend + top products -->
+        <div class="dash-bottom">
+
+          <!-- 7-day trend -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-title">7-Day Order Trend</span>
+            </div>
+            <div class="trend-chart">
+              @for (day of stats.daily_trend; track day.day) {
+                <div class="trend-col">
+                  <div class="trend-bar-wrap">
+                    <div class="trend-bar"
+                      [style.height.%]="topDailyRevenue > 0 ? ((day.revenue || 0) / topDailyRevenue) * 100 : 5"
+                      [title]="'₹' + (day.revenue || 0) + ' · ' + day.count + ' orders'">
+                    </div>
+                  </div>
+                  <span class="trend-label">{{ day.day | date:'d MMM' }}</span>
+                  <span class="trend-count">{{ day.count }}</span>
+                </div>
+              }
+              @if (!stats.daily_trend.length) {
+                <div class="empty-trend">No orders in the last 7 days</div>
+              }
+            </div>
+          </div>
+
+          <!-- Top 5 products -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-title">Top Selling Products</span>
+            </div>
+            @if (!stats.top_products.length) {
+              <div class="empty-state-sm">No order data yet</div>
+            }
+            @for (p of stats.top_products; track p.product_name; let i = $index) {
+              <div class="top-product-row">
+                <span class="tp-rank">#{{ i + 1 }}</span>
+                <span class="tp-name">{{ p.product_name }}</span>
+                <div class="tp-right">
+                  <span class="tp-units">{{ p.units_sold }} sold</span>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+      }
+    }
+
+    <!-- ════════════════════════════════════════════
+         TAB: ORDERS
+    ════════════════════════════════════════════ -->
+    @if (activeTab === 'orders') {
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Orders</h1>
+          <span class="topbar-breadcrumb">Manage and update customer orders</span>
+        </div>
+        <div class="topbar-right">
+          @if (stats) {
+            <div class="topbar-stat"><span class="ts-num">{{ stats.pending }}</span><span class="ts-lbl">Pending</span></div>
+            <div class="topbar-stat"><span class="ts-num">{{ stats.total_orders }}</span><span class="ts-lbl">Total</span></div>
+          }
+        </div>
+      </header>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search ID, name, email…" [(ngModel)]="searchInput" (keyup.enter)="applyFilters()" />
+          </div>
+          <select class="tb-select" [(ngModel)]="selectedStatusFilter" (change)="applyFilters()">
+            <option value="">All Statuses</option>
+            @for (s of STATUS_OPTIONS; track s) { <option [value]="s">{{ s }}</option> }
+          </select>
+          <select class="tb-select" [(ngModel)]="selectedPaymentFilter" (change)="applyFilters()">
+            <option value="">All Payments</option>
+            @for (p of PAYMENT_OPTIONS; track p) { <option [value]="p">{{ p }}</option> }
+          </select>
+          <input type="date" class="tb-date" [(ngModel)]="dateFrom" (change)="applyFilters()" />
+          <span class="date-sep">–</span>
+          <input type="date" class="tb-date" [(ngModel)]="dateTo" (change)="applyFilters()" />
+        </div>
+        <div class="toolbar-right">
+          @if (selectedStatusFilter || selectedPaymentFilter || searchInput || dateFrom || dateTo) {
+            <button class="btn-ghost" (click)="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+          }
+        </div>
+      </div>
+
+      <!-- Table + detail -->
+      <div class="orders-area" [class.panel-open]="selectedOrder || detailLoading">
+        <div class="table-card">
+          @if (ordersLoading) {
+            <div class="state-block"><i class="fas fa-spinner fa-spin"></i><span>Loading…</span></div>
+          }
+          @if (!ordersLoading && orders.length === 0) {
+            <div class="state-block"><i class="fas fa-inbox empty-icon"></i><span>No orders match your filters.</span></div>
+          }
+          @if (!ordersLoading && orders.length > 0) {
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order</th><th>Customer</th><th>Date</th>
+                  <th>Items</th><th>Total</th><th>Payment</th><th>Stock Status</th><th>Status</th><th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of orders; track order.id) {
+                  <tr [class.row-active]="selectedOrder?.id === order.id" (click)="openDetail(order)">
+                    <td><span class="order-id-cell">#{{ order.id }}</span></td>
+                    <td>
+                      <div class="customer-cell">
+                        <span class="c-name">{{ order.full_name }}</span>
+                        <span class="c-email">{{ order.customer_email }}</span>
+                      </div>
+                    </td>
+                    <td class="date-cell">{{ order.created_at | date:'d MMM yyyy' }}</td>
+                    <td class="center-cell">{{ totalItems(order) }}</td>
+                    <td><strong>₹{{ order.total_amount }}</strong></td>
+                    <td class="payment-cell">{{ order.payment_method }}</td>
+                    <td class="center-cell">
+                      @if (hasAnyItems(order)) {
+                        <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #dcfce7; color: #14532d;">
+                          In Stock
+                        </span>
+                      } @else {
+                        <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: #fee2e2; color: #7f1d1d;">
+                          No Items
+                        </span>
+                      }
+                    </td>
+                    <td><span [class]="'status-pill ' + statusClass(order.status)">{{ order.status }}</span></td>
+                    <td class="chevron-cell"><i class="fas fa-chevron-right"></i></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <div class="table-footer">{{ orders.length }} order{{ orders.length !== 1 ? 's' : '' }} found</div>
+          }
+        </div>
+
+        <!-- Detail panel -->
+        @if (selectedOrder || detailLoading) {
+          <aside class="detail-panel">
+            <div class="dp-header">
+              <div class="dp-title-row">
+                @if (!detailLoading && selectedOrder) {
+                  <div>
+                    <span class="dp-order-id">Order #{{ selectedOrder.id }}</span>
+                    <span class="dp-date">{{ selectedOrder.created_at | date:'d MMM yyyy, h:mm a' }}</span>
+                  </div>
+                  <span [class]="'status-pill ' + statusClass(selectedOrder.status)">{{ selectedOrder.status }}</span>
+                }
+              </div>
+              <button class="dp-close" (click)="closeDetail()"><i class="fas fa-times"></i></button>
+            </div>
+            @if (detailLoading) {
+              <div class="state-block"><i class="fas fa-spinner fa-spin"></i><span>Loading…</span></div>
+            }
+            @if (!detailLoading && selectedOrder) {
+              <div class="dp-body">
+                <div class="dp-section">
+                  <div class="dp-section-title">Customer</div>
+                  <div class="dp-row"><i class="fas fa-user"></i><span>{{ selectedOrder.full_name }}</span></div>
+                  <div class="dp-row"><i class="fas fa-envelope"></i><span>{{ selectedOrder.customer_email }}</span></div>
+                  <div class="dp-row"><i class="fas fa-phone"></i><span>{{ selectedOrder.phone }}</span></div>
+                </div>
+                <div class="dp-section">
+                  <div class="dp-section-title">Shipping Address</div>
+                  <div class="dp-row"><i class="fas fa-map-marker-alt"></i>
+                    <span>{{ selectedOrder.address_line }}, {{ selectedOrder.city }}, {{ selectedOrder.state }} – {{ selectedOrder.pincode }}</span>
+                  </div>
+                </div>
+                <div class="dp-section">
+                  <div class="dp-section-title">Items</div>
+                  <div class="dp-items">
+                    @for (item of selectedOrder.items; track item.id) {
+                      <div class="dp-item">
+                        <div class="dp-item-info">
+                          <span class="dp-item-name">{{ item.product_name }}</span>
+                          <span class="dp-item-variant">{{ item.variant_weight }}</span>
+                        </div>
+                        <div class="dp-item-right">
+                          <span class="dp-item-qty">×{{ item.quantity }}</span>
+                          <span class="dp-item-price">₹{{ item.subtotal }}</span>
+                          <!-- Inline stock toggle -->
+                          <button
+                            class="item-stock-btn"
+                            [class.item-stock-btn--in]="getItemStockState(item.product_name, item.variant_weight) === true"
+                            [class.item-stock-btn--out]="getItemStockState(item.product_name, item.variant_weight) === false"
+                            [disabled]="isItemStockToggling(item.product_name, item.variant_weight)"
+                            (click)="toggleItemStock(item.product_name, item.variant_weight)"
+                            [title]="getItemStockState(item.product_name, item.variant_weight) === true
+                              ? 'Mark as Out of Stock'
+                              : getItemStockState(item.product_name, item.variant_weight) === false
+                                ? 'Mark as In Stock'
+                                : 'Toggle stock status'"
+                          >
+                            @if (isItemStockToggling(item.product_name, item.variant_weight)) {
+                              <i class="fas fa-spinner fa-spin"></i>
+                            } @else if (getItemStockState(item.product_name, item.variant_weight) === true) {
+                              <i class="fas fa-toggle-on"></i>
+                            } @else if (getItemStockState(item.product_name, item.variant_weight) === false) {
+                              <i class="fas fa-toggle-off"></i>
+                            } @else {
+                              <i class="fas fa-exchange-alt"></i>
+                            }
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <div class="dp-total-row"><span>Order Total</span><strong>₹{{ selectedOrder.total_amount }}</strong></div>
+                </div>
+                <div class="dp-section">
+                  <div class="dp-section-title">Payment</div>
+                  <div class="dp-row"><i class="fas fa-credit-card"></i>
+                    <span>{{ selectedOrder.payment_method }}
+                      @if (selectedOrder.payment_id) { <span class="muted"> · {{ selectedOrder.payment_id }}</span> }
+                    </span>
+                  </div>
+                </div>
+                <div class="dp-section dp-update-section">
+                  <div class="dp-section-title">Update Status</div>
+                  <div class="update-form">
+                    <select class="up-select" [(ngModel)]="newStatus">
+                      @for (s of STATUS_OPTIONS; track s) { <option [value]="s">{{ s }}</option> }
+                    </select>
+                    <textarea class="up-textarea" rows="2" placeholder="Internal note (optional)" [(ngModel)]="updateNote"></textarea>
+                    <div class="update-actions">
+                      <button class="btn-primary" (click)="submitUpdate()" [disabled]="updateLoading || newStatus === selectedOrder.status">
+                        @if (updateLoading) { <i class="fas fa-spinner fa-spin"></i> Saving… }
+                        @else { <i class="fas fa-check"></i> Save }
+                      </button>
+                      @if (updateSuccess) { <span class="success-msg"><i class="fas fa-check-circle"></i> Saved</span> }
+                      @if (ordersErrorMsg) { <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ ordersErrorMsg }}</span> }
+                    </div>
+                  </div>
+                </div>
+                @if (selectedOrder.status_history.length > 0) {
+                  <div class="dp-section">
+                    <div class="dp-section-title">Status History</div>
+                    <div class="history-list">
+                      @for (entry of selectedOrder.status_history; track entry.id) {
+                        <div class="history-item">
+                          <div class="history-dot" [ngClass]="statusClass(entry.new_status)"></div>
+                          <div class="history-body">
+                            <div class="history-badges">
+                              <span [class]="'status-pill status-pill-sm ' + statusClass(entry.old_status)">{{ entry.old_status }}</span>
+                              <i class="fas fa-long-arrow-alt-right h-arrow"></i>
+                              <span [class]="'status-pill status-pill-sm ' + statusClass(entry.new_status)">{{ entry.new_status }}</span>
+                            </div>
+                            <div class="history-meta">{{ entry.changed_at | date:'d MMM yyyy, h:mm a' }}
+                              @if (entry.changed_by) { · {{ entry.changed_by }} }
+                            </div>
+                            @if (entry.note) { <div class="history-note">{{ entry.note }}</div> }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </aside>
+        }
+      </div>
+    }
+
+    <!-- ════════════════════════════════════════════
+         TAB: STOCK
+    ════════════════════════════════════════════ -->
+    @if (activeTab === 'stock') {
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Stock Management</h1>
+          <span class="topbar-breadcrumb">Mark variants in stock or out of stock</span>
+        </div>
+        <div class="topbar-right">
+          @if (stockItems.length > 0) {
+            <div class="topbar-stat"><span class="ts-num">{{ inStockCount }}</span><span class="ts-lbl">In Stock</span></div>
+            <div class="topbar-stat red"><span class="ts-num">{{ outOfStockCount }}</span><span class="ts-lbl">Out of Stock</span></div>
+          }
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search product name…" [(ngModel)]="stockSearchInput" (keyup.enter)="loadStock()" />
+          </div>
+          <select class="tb-select" [(ngModel)]="stockFilter" (change)="loadStock()">
+            <option value="">All</option>
+            <option value="true">In Stock</option>
+            <option value="false">Out of Stock</option>
+          </select>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn-ghost" (click)="loadStock()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+      </div>
+
+      @if (stockLoading) {
+        <div class="tab-loading"><i class="fas fa-spinner fa-spin"></i> Loading stock…</div>
+      }
+      @if (stockError) {
+        <div class="tab-error"><i class="fas fa-exclamation-circle"></i> {{ stockError }}</div>
+      }
+
+      @if (!stockLoading && stockItems.length === 0 && !stockError) {
+        <div class="state-block"><i class="fas fa-cubes empty-icon"></i><span>No products found.</span></div>
+      }
+
+      @if (!stockLoading && stockItems.length > 0) {
+        <div class="stock-table-wrap">
+          <table class="stock-table">
+            <colgroup>
+              <col /><!-- Product -->
+              <col /><!-- Variant -->
+              <col /><!-- Price -->
+              <col /><!-- Status -->
+              <col /><!-- Action -->
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (variant of stockItems; track variant.id) {
+                <tr [class.stock-row-oos]="!variant.in_stock">
+                  <td class="st-product">{{ variant.product_name }}</td>
+                  <td class="st-weight">{{ variant.weight }}</td>
+                  <td class="st-price">₹{{ variant.discounted_price }}</td>
+                  <td class="st-status">
+                    <span [class]="variant.in_stock ? 'stock-pill in' : 'stock-pill out'">
+                      {{ variant.in_stock ? 'In Stock' : 'Out of Stock' }}
+                    </span>
+                  </td>
+                  <td class="st-action">
+                    <button
+                      [class]="variant.in_stock ? 'stock-action-btn mark-oos' : 'stock-action-btn mark-in'"
+                      [disabled]="stockTogglingId === variant.id"
+                      (click)="toggleStock(variant)"
+                    >
+                      @if (stockTogglingId === variant.id) {
+                        <i class="fas fa-spinner fa-spin"></i> Saving…
+                      } @else if (variant.in_stock) {
+                        <i class="fas fa-times-circle"></i> Mark Out of Stock
+                      } @else {
+                        <i class="fas fa-check-circle"></i> Mark In Stock
+                      }
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+
+    <!-- ════════════════════════════════════════════
+         TAB: CUSTOMERS
+    ════════════════════════════════════════════ -->
+    @if (activeTab === 'customers') {
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Customer Insights</h1>
+          <span class="topbar-breadcrumb">Order history and spending by customer</span>
+        </div>
+        <div class="topbar-right">
+          @if (stats) {
+            <div class="topbar-stat"><span class="ts-num">{{ stats.customers_with_orders }}</span><span class="ts-lbl">Buyers</span></div>
+            <div class="topbar-stat"><span class="ts-num">{{ stats.total_customers }}</span><span class="ts-lbl">Registered</span></div>
+          }
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search by name or email…" [(ngModel)]="customerSearch" (keyup.enter)="loadCustomers()" />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn-ghost" (click)="loadCustomers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+      </div>
+
+      @if (customersLoading) {
+        <div class="tab-loading"><i class="fas fa-spinner fa-spin"></i> Loading customers…</div>
+      }
+      @if (customersError) {
+        <div class="tab-error"><i class="fas fa-exclamation-circle"></i> {{ customersError }}</div>
+      }
+
+      @if (!customersLoading && customers.length === 0 && !customersError) {
+        <div class="state-block"><i class="fas fa-users empty-icon"></i><span>No customers found.</span></div>
+      }
+
+      @if (!customersLoading && customers.length > 0) {
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th class="sortable" (click)="sortCustomers('orders')">
+                  Orders <i class="fas {{ sortIcon('orders') }}"></i>
+                </th>
+                <th class="sortable" (click)="sortCustomers('total_spent')">
+                  Spent <i class="fas {{ sortIcon('total_spent') }}"></i>
+                </th>
+                <th>Delivered</th>
+                <th>Cancelled</th>
+                <th class="sortable" (click)="sortCustomers('last_order')">
+                  Last Order <i class="fas {{ sortIcon('last_order') }}"></i>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of customers; track c.user_id) {
+                <tr [class.row-expanded]="expandedCustomerId === c.user_id">
+                  <td>
+                    <div class="customer-cell">
+                      <div class="c-avatar">{{ (c.first_name || c.email).charAt(0).toUpperCase() }}</div>
+                      <div>
+                        <span class="c-name">{{ c.first_name }} {{ c.last_name }}</span>
+                        <span class="c-email">{{ c.email }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="center-cell"><strong>{{ c.total_orders }}</strong></td>
+                  <td><strong>₹{{ c.total_spent | number:'1.0-0' }}</strong></td>
+                  <td class="center-cell">
+                    <span class="status-pill status-delivered">{{ c.delivered_orders }}</span>
+                  </td>
+                  <td class="center-cell">
+                    @if (c.cancelled_orders > 0) {
+                      <span class="status-pill status-cancelled">{{ c.cancelled_orders }}</span>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
+                  <td class="date-cell">{{ c.last_order | date:'d MMM yyyy' }}</td>
+                  <td>
+                    <button class="btn-ghost btn-sm" (click)="toggleCustomerOrders(c)">
+                      <i class="fas" [class.fa-chevron-down]="expandedCustomerId !== c.user_id" [class.fa-chevron-up]="expandedCustomerId === c.user_id"></i>
+                    </button>
+                  </td>
+                </tr>
+                @if (expandedCustomerId === c.user_id) {
+                  <tr class="customer-detail-row">
+                    <td colspan="7">
+                      @if (customerOrdersLoading) {
+                        <div class="cust-orders-loading"><i class="fas fa-spinner fa-spin"></i> Loading orders…</div>
+                      }
+                      @if (!customerOrdersLoading && customerOrders.length === 0) {
+                        <div class="cust-orders-empty">No orders found for this customer.</div>
+                      }
+                      @if (!customerOrdersLoading && customerOrders.length > 0) {
+                        <div class="cust-orders-mini">
+                          @for (co of customerOrders; track co.id) {
+                            <div class="co-row">
+                              <span class="co-id">#{{ co.id }}</span>
+                              <span class="co-date">{{ co.created_at | date:'d MMM yyyy' }}</span>
+                              <span [class]="'status-pill status-pill-sm ' + statusClass(co.status)">{{ co.status }}</span>
+                              <span class="co-amount">₹{{ co.total_amount }}</span>
+                              <span class="co-payment">{{ co.payment_method }}</span>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+          <div class="table-footer">{{ customers.length }} customer{{ customers.length !== 1 ? 's' : '' }}</div>
+        </div>
+      }
+    }
+
+    <!-- ════════════════════════════════════════════
+         TAB: LOGS
+    ════════════════════════════════════════════ -->
+    @if (activeTab === 'logs') {
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Order Logs</h1>
+          <span class="topbar-breadcrumb">Complete history of all order status changes</span>
+        </div>
+        <div class="topbar-right">
+          @if (logs.length > 0) {
+            <button class="btn-ghost" (click)="exportLogsCSV()">
+              <i class="fas fa-download"></i> Export CSV
+            </button>
+          }
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search order ID, customer, email…" [(ngModel)]="logSearchInput" (keyup.enter)="applyLogFilters()" />
+          </div>
+          <select class="tb-select" [(ngModel)]="logStatusFromFilter" (change)="applyLogFilters()">
+            <option value="">All From Status</option>
+            @for (s of STATUS_OPTIONS; track s) { <option [value]="s">{{ s }}</option> }
+          </select>
+          <select class="tb-select" [(ngModel)]="logStatusToFilter" (change)="applyLogFilters()">
+            <option value="">All To Status</option>
+            @for (s of STATUS_OPTIONS; track s) { <option [value]="s">{{ s }}</option> }
+          </select>
+          <input type="date" class="tb-date" [(ngModel)]="logDateFrom" (change)="applyLogFilters()" />
+          <span class="date-sep">–</span>
+          <input type="date" class="tb-date" [(ngModel)]="logDateTo" (change)="applyLogFilters()" />
+        </div>
+        <div class="toolbar-right">
+          @if (logSearchInput || logStatusFromFilter || logStatusToFilter || logDateFrom || logDateTo) {
+            <button class="btn-ghost" (click)="clearLogFilters()"><i class="fas fa-times"></i> Clear</button>
+          }
+          <button class="btn-ghost" (click)="loadLogs()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+      </div>
+
+      @if (logsLoading) {
+        <div class="tab-loading"><i class="fas fa-spinner fa-spin"></i> Loading logs…</div>
+      }
+      @if (logsError) {
+        <div class="tab-error"><i class="fas fa-exclamation-circle"></i> {{ logsError }}</div>
+      }
+
+      @if (!logsLoading && logs.length === 0 && !logsError) {
+        <div class="state-block"><i class="fas fa-history empty-icon"></i><span>No logs found.</span></div>
+      }
+
+      @if (!logsLoading && logs.length > 0) {
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order</th><th>Customer</th><th>Amount</th><th>Status Change</th><th>Changed By</th><th>Date & Time</th><th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of logs; track log.id) {
+                <tr>
+                  <td><span class="order-id-cell">#{{ log.order_id }}</span></td>
+                  <td>
+                    <div class="customer-cell">
+                      <span class="c-name">{{ log.customer_name }}</span>
+                      <span class="c-email">{{ log.customer_email }}</span>
+                    </div>
+                  </td>
+                  <td><strong>₹{{ log.total_amount }}</strong></td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span [class]="'status-pill status-pill-sm ' + statusClass(log.old_status)">{{ log.old_status }}</span>
+                      <i class="fas fa-arrow-right" style="font-size: 11px; color: #cbd5e1;"></i>
+                      <span [class]="'status-pill status-pill-sm ' + statusClass(log.new_status)">{{ log.new_status }}</span>
+                    </div>
+                  </td>
+                  <td style="font-size: 12px; color: #64748b;">
+                    @if (log.changed_by_email) {
+                      {{ log.changed_by_email }}
+                    } @else {
+                      <span style="color: #94a3b8;">System</span>
+                    }
+                  </td>
+                  <td class="date-cell">{{ log.changed_at | date:'d MMM yyyy, h:mm a' }}</td>
+                  <td>
+                    @if (log.note) {
+                      <span style="font-size: 12px; color: #64748b; background: #f1f5f9; padding: 3px 8px; border-radius: 4px; display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="log.note">
+                        {{ log.note }}
+                      </span>
+                    } @else {
+                      <span style="color: #cbd5e1;">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <div class="table-footer">{{ logs.length }} log{{ logs.length !== 1 ? 's' : '' }} found</div>
+        </div>
+      }
+    }
+
+  </div><!-- /admin-main -->
+</div><!-- /admin-shell -->

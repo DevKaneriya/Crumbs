@@ -65,6 +65,7 @@ def _user_payload(user):
         'name': (user.get_full_name() or user.get_username()),
         'email': user.email,
         'username': user.get_username(),
+        'is_staff': user.is_staff,
     }
 
 

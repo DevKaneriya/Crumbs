@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib import messages
 from .models import Category, Product, ProductImage, ProductVariant
 
 
@@ -42,6 +43,18 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
-    list_display = ['product', 'weight', 'original_price', 'discounted_price']
-    list_filter = ['product']
+    list_display = ['product', 'weight', 'original_price', 'discounted_price', 'in_stock']
+    list_editable = ['in_stock']
+    list_filter = ['in_stock', 'product']
     search_fields = ['product__name', 'weight']
+    actions = ['mark_in_stock', 'mark_out_of_stock']
+
+    @admin.action(description='Mark selected variants as In Stock')
+    def mark_in_stock(self, request, queryset):
+        updated = queryset.update(in_stock=True)
+        self.message_user(request, f'{updated} variant(s) marked as In Stock.', messages.SUCCESS)
+
+    @admin.action(description='Mark selected variants as Out of Stock')
+    def mark_out_of_stock(self, request, queryset):
+        updated = queryset.update(in_stock=False)
+        self.message_user(request, f'{updated} variant(s) marked as Out of Stock.', messages.SUCCESS)

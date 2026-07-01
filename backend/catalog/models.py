@@ -73,6 +73,7 @@ class ProductVariant(models.Model):
     weight = models.CharField(max_length=50)  # e.g. '75gm', '150gm'
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2)
+    in_stock = models.BooleanField(default=True)  # Stock availability toggle
 
     class Meta:
         ordering = ['original_price']
