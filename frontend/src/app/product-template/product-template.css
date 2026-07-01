@@ -10,7 +10,7 @@
 /* Base: Mobile = Horizontal scrollable slider */
 .category-slider {
   display: flex;
-  gap: 10px;
+  gap: 24px;
   overflow-x: auto;
   padding: 0 40px;
   scroll-behavior: smooth;
@@ -60,6 +60,10 @@
 }
 
 @media (max-width: 768px) {
+  .category-slider {
+    gap: 16px;
+  }
+
   .category-slider-wrapper {
     min-height: 172px;
   }

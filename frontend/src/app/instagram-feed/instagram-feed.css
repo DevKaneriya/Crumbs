@@ -1,0 +1,166 @@
+.instagram-section {
+  padding: 60px 40px;
+  background-color: var(--background-color);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.tagline-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.tagline-wrapper .line {
+  height: 1px;
+  width: 40px;
+  background-color: var(--orange);
+}
+
+.tagline {
+  display: inline-block;
+  font-family: var(--head-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.headline {
+  font-family: var(--head-font);
+  font-size: var(--header);
+  font-weight: var(--header-weight);
+  color: var(--head-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-icon {
+  background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 38px;
+}
+
+.handle {
+  background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+.handle:hover {
+  opacity: 0.8;
+}
+
+.handle::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #f09433, #dc2743, #bc1888);
+  transition: width 0.3s ease;
+}
+
+.handle:hover::after {
+  width: 100%;
+}
+
+/* ─── Grid Layout ─── */
+.insta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.insta-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  aspect-ratio: 1;
+  display: block;
+}
+
+/* First image spans 2 rows for visual interest */
+.insta-item.wide {
+  grid-row: span 2;
+}
+
+.insta-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.hover-overlay i {
+  font-size: 36px;
+  color: #fff;
+  transform: scale(0.7);
+  transition: transform 0.35s ease;
+}
+
+.insta-item:hover img {
+  transform: scale(1.08);
+}
+
+.insta-item:hover .hover-overlay {
+  opacity: 1;
+}
+
+.insta-item:hover .hover-overlay i {
+  transform: scale(1);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .instagram-section {
+    padding: 40px 20px;
+  }
+
+  .insta-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .insta-item.wide {
+    grid-row: span 1;
+  }
+
+  .section-header {
+    margin-bottom: 24px;
+  }
+
+  .hover-overlay i {
+    font-size: 28px;
+  }
+}

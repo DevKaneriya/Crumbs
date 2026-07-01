@@ -1,0 +1,9 @@
+<section class="stats-section" #statsSection>
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <i [class]="stat.icon" class="stat-icon"></i>
+      <div class="stat-value">{{ formatNumber(stat.current) }}{{ stat.suffix }}</div>
+      <div class="stat-label">{{ stat.label }}</div>
+    </div>
+  </div>
+</section>

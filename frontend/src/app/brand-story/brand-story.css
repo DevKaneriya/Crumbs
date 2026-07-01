@@ -1,0 +1,121 @@
+.brand-story {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('/assets/brand-story-bg.png') center/cover no-repeat;
+  overflow: hidden;
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+.story-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 720px;
+  padding: 60px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  /* Start hidden for animation */
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.story-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tagline {
+  display: inline-block;
+  font-family: var(--head-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange);
+  border: 1px solid var(--orange);
+  padding: 6px 18px;
+  border-radius: 30px;
+}
+
+.headline {
+  font-family: var(--head-font);
+  font-size: 44px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.description {
+  font-family: var(--body-font);
+  font-size: 17px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+.cta-btn {
+  font-family: var(--head-font);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--orange);
+  border: none;
+  padding: 14px 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-btn:hover {
+  background: #e08f0d;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(244, 160, 25, 0.35);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .brand-story {
+    min-height: 420px;
+  }
+
+  .story-content {
+    padding: 40px 24px;
+    gap: 16px;
+  }
+
+  .headline {
+    font-size: 28px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .cta-btn {
+    padding: 12px 28px;
+    font-size: 14px;
+  }
+}

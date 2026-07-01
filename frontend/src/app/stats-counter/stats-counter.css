@@ -1,0 +1,101 @@
+.stats-section {
+  position: relative;
+  background: url('/assets/brand-story-bg.png') center/cover fixed no-repeat;
+  padding: 80px 40px;
+  width: 100%;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.85); /* Dark overlay */
+  z-index: 1;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(244, 160, 25, 0.3); /* Subtle orange glow border on hover */
+}
+
+.stat-icon {
+  font-size: 38px;
+  color: var(--orange);
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px rgba(244, 160, 25, 0.4));
+}
+
+.stat-value {
+  font-family: var(--head-font);
+  font-size: 46px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.stat-label {
+  font-family: var(--body-font);
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .stats-section {
+    padding: 60px 20px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .stat-card {
+    padding: 30px 15px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+  }
+
+  .stat-icon {
+    font-size: 28px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+}

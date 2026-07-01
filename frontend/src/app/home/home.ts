@@ -9,13 +9,16 @@ import { Category } from "../category/category";
 import { Marque } from "../marque/marque";
 import { SpeciallyCurated } from "../specially-curated/specially-curated";
 import { WhyChooseUs } from "../why-choose-us/why-choose-us";
+import { BrandStory } from "../brand-story/brand-story";
+import { StatsCounter } from "../stats-counter/stats-counter";
+import { InstagramFeed } from "../instagram-feed/instagram-feed";
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, Header, ProductTemplate, HeroPage, ProductSwiper, Category, Feedback, Footer, Marque, SpeciallyCurated, WhyChooseUs],
+  imports: [CommonModule, Header, ProductTemplate, HeroPage, ProductSwiper, Category, Feedback, Footer, Marque, SpeciallyCurated, WhyChooseUs, BrandStory, StatsCounter, InstagramFeed],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

@@ -1,5 +1,5 @@
 .hero-img {
-  height: 70vh;
+  height: 92vh;
   object-fit: cover;
 }
 
@@ -57,7 +57,7 @@
 @media (max-width: 768px) {
 
   .hero-img {
-    height: 50vh;
+    height: 70vh;
     object-fit: cover;
   }
 

@@ -1,0 +1,25 @@
+<section class="instagram-section">
+  <div class="section-header">
+    <div class="tagline-wrapper">
+      <div class="line"></div>
+      <span class="tagline">Our Social Flavors</span>
+      <div class="line"></div>
+    </div>
+    <h2 class="headline"><i class="fab fa-instagram header-icon"></i> Follow Us <a href="https://instagram.com" target="_blank" class="handle">@crumbs.mukhwas</a></h2>
+  </div>
+
+  <div class="insta-grid">
+    <a
+      *ngFor="let img of images; let i = index"
+      class="insta-item"
+      href="https://instagram.com"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img [src]="img.src" [alt]="img.alt" loading="lazy" />
+      <div class="hover-overlay">
+        <i class="fab fa-instagram"></i>
+      </div>
+    </a>
+  </div>
+</section>
