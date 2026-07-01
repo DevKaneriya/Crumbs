@@ -16,6 +16,10 @@
   transition: transform 0.3s ease;
 }
 
+.category-item {
+  cursor: pointer;
+}
+
 .category-box img {
   height: 230px;
   object-fit: cover;

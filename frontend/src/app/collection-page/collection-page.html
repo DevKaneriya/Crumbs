@@ -16,7 +16,7 @@
 
         <!-- Actual categories — stays in DOM, just hidden -->
         <div class="category-slider" [hidden]="isLoading">
-            <div class="category-item" *ngFor="let item of categories">
+            <div class="category-item" *ngFor="let item of categories" (click)="navigateToCategory(item.route)">
                 <div class="category-box shadow-sm overflow-hidden">
                     <img [src]="item.image" alt="{{item.name}}" class="img-fluid w-100" />
                 </div>

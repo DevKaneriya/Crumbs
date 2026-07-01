@@ -1,0 +1,250 @@
+<app-header></app-header>
+
+<div class="checkout-container">
+
+  <!-- ─── Success Screen ─── -->
+  <div class="success-screen" *ngIf="orderSuccess">
+    <i class="fas fa-check-circle success-icon"></i>
+    <h2>Order Placed Successfully!</h2>
+    <p>Thank you for your purchase. Your order ID is <strong>#{{orderId}}</strong>.</p>
+    <p>We'll send you an email confirmation shortly with tracking details.</p>
+    <button class="btn-primary mt-4" (click)="continueShopping()">Continue Shopping</button>
+  </div>
+
+  <!-- ─── Checkout Form ─── -->
+  <div class="checkout-content" *ngIf="!orderSuccess">
+    <div class="left-column">
+
+      <!-- ─── Shipping Address ─── -->
+      <div class="checkout-section">
+        <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+
+        <!-- Loading state -->
+        <div class="addr-loading" *ngIf="addressesLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading your addresses…
+        </div>
+
+        <!-- Has a selected address -->
+        <ng-container *ngIf="!addressesLoading && selectedAddress">
+          <div class="addr-selected-card">
+            <div class="addr-badge" *ngIf="selectedAddress.is_default">Default</div>
+            <div class="addr-name">{{ selectedAddress.first_name }} {{ selectedAddress.last_name }}</div>
+            <div class="addr-line">{{ selectedAddress.address }}<span *ngIf="selectedAddress.apartment">, {{ selectedAddress.apartment }}</span></div>
+            <div class="addr-line">{{ selectedAddress.city }}, {{ selectedAddress.state }} – {{ selectedAddress.pin_code }}</div>
+            <div class="addr-phone"><i class="fas fa-phone"></i> {{ selectedAddress.phone_no }}</div>
+            <div class="addr-actions">
+              <button class="btn-link" (click)="openAddressPicker()">
+                <i class="fas fa-exchange-alt"></i> Change Address
+              </button>
+              <button class="btn-link" (click)="openEditForm(selectedAddress); showAddressPicker = true">
+                <i class="fas fa-pencil-alt"></i> Edit
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- No address saved -->
+        <div class="addr-empty" *ngIf="!addressesLoading && !selectedAddress">
+          <i class="fas fa-map-marker-alt addr-empty-icon"></i>
+          <p>No shipping address found.</p>
+          <button class="btn-add-address" (click)="openAddForm(); showAddressPicker = true">
+            <i class="fas fa-plus"></i> Add Address
+          </button>
+        </div>
+      </div>
+
+      <!-- ─── Payment Method ─── -->
+      <div class="checkout-section mt-4">
+        <h3><i class="fas fa-wallet"></i> Payment Method</h3>
+        <div class="payment-options">
+          <div
+            class="payment-option"
+            *ngFor="let opt of paymentOptions"
+            [class.active]="paymentMethod === opt.id"
+            (click)="setPaymentMethod(opt.id)"
+          >
+            <i [class]="opt.icon"></i>
+            <span>{{opt.label}}</span>
+            <div class="radio-circle"></div>
+          </div>
+        </div>
+
+        <div class="payment-note" *ngIf="paymentMethod !== 'COD'">
+          <i class="fas fa-info-circle"></i>
+          Note: In this demo environment, selecting "{{paymentMethod}}" will simulate a successful payment transaction without asking for real credentials.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── Order Summary ─── -->
+    <div class="right-column">
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+
+        <div class="summary-items">
+          <div class="summary-item" *ngFor="let item of cartItems">
+            <div class="item-image">
+              <img [src]="item.image" [alt]="item.name">
+              <span class="item-qty">{{item.quantity}}</span>
+            </div>
+            <div class="item-details">
+              <span class="item-name">{{item.name}}</span>
+              <span class="item-variant">{{item.variant}}</span>
+            </div>
+            <div class="item-price">Rs. {{item.subtotal | number:'1.2-2'}}</div>
+          </div>
+        </div>
+
+        <div class="summary-totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>Rs. {{totalAmount | number:'1.2-2'}}</span>
+          </div>
+          <div class="total-row">
+            <span>Shipping</span>
+            <span class="free">Free</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <span>Rs. {{totalAmount | number:'1.2-2'}}</span>
+          </div>
+        </div>
+
+        <button
+          class="btn-place-order"
+          [disabled]="isPlacingOrder || cartItems.length === 0 || !selectedAddress"
+          (click)="placeOrder()"
+        >
+          <span *ngIf="!isPlacingOrder">Place Order</span>
+          <span *ngIf="isPlacingOrder"><i class="fas fa-spinner fa-spin"></i> Processing…</span>
+        </button>
+
+        <p class="no-addr-hint" *ngIf="!selectedAddress && !addressesLoading">
+          <i class="fas fa-exclamation-circle"></i> Add a shipping address to continue.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     Address Picker Modal
+═══════════════════════════════════════════════════════ -->
+<div class="addr-modal-backdrop" *ngIf="showAddressPicker" (click)="closeAddressPicker()"></div>
+
+<div class="addr-modal" *ngIf="showAddressPicker" (click)="$event.stopPropagation()">
+
+  <!-- ── Panel: address list ── -->
+  <ng-container *ngIf="addressFormMode === null">
+    <div class="addr-panel-header">
+      <h4>Saved Addresses</h4>
+      <button class="addr-panel-close" (click)="closeAddressPicker()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="addr-panel-body">
+      <div
+        class="addr-picker-item"
+        *ngFor="let addr of addresses"
+        [class.addr-picker-selected]="selectedAddress?.id === addr.id"
+        (click)="selectAddress(addr)"
+      >
+        <div class="addr-picker-radio">
+          <div class="radio-circle" [class.radio-filled]="selectedAddress?.id === addr.id"></div>
+        </div>
+        <div class="addr-picker-info">
+          <div class="addr-picker-name">
+            {{ addr.first_name }} {{ addr.last_name }}
+            <span class="addr-badge" *ngIf="addr.is_default">Default</span>
+          </div>
+          <div class="addr-picker-line">{{ addr.address }}<span *ngIf="addr.apartment">, {{ addr.apartment }}</span></div>
+          <div class="addr-picker-line">{{ addr.city }}, {{ addr.state }} – {{ addr.pin_code }}</div>
+          <div class="addr-picker-line"><i class="fas fa-phone"></i> {{ addr.phone_no }}</div>
+        </div>
+        <div class="addr-picker-btns" (click)="$event.stopPropagation()">
+          <button class="btn-icon" title="Edit" (click)="openEditForm(addr)"><i class="fas fa-pencil-alt"></i></button>
+          <button class="btn-icon btn-icon-del" title="Delete" (click)="deleteAddress(addr, $event)"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </div>
+
+      <div class="addr-picker-empty" *ngIf="addresses.length === 0">
+        <i class="fas fa-map-marker-alt"></i>
+        <p>No saved addresses yet.</p>
+      </div>
+    </div>
+
+    <div class="addr-panel-footer">
+      <button class="btn-add-address" (click)="openAddForm()">
+        <i class="fas fa-plus"></i> Add New Address
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- ── Panel: add / edit form ── -->
+  <ng-container *ngIf="addressFormMode === 'add' || addressFormMode === 'edit'">
+    <div class="addr-panel-header">
+      <button class="addr-back-btn" (click)="backToPickerList()"><i class="fas fa-arrow-left"></i></button>
+      <h4>{{ addressFormMode === 'add' ? 'Add New Address' : 'Edit Address' }}</h4>
+      <button class="addr-panel-close" (click)="closeAddressPicker()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="addr-panel-body">
+      <div class="addr-form-error" *ngIf="addressFormError">
+        <i class="fas fa-exclamation-circle"></i> {{ addressFormError }}
+      </div>
+
+      <div class="addr-form">
+        <div class="form-group">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.first_name" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.last_name" placeholder="Doe">
+        </div>
+        <div class="form-group full-width">
+          <label>Address Line <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.address" placeholder="123 Main Street">
+        </div>
+        <div class="form-group full-width">
+          <label>Apartment / Suite <span class="optional">(optional)</span></label>
+          <input type="text" [(ngModel)]="addressForm.apartment" placeholder="Apt 4B, Floor 2">
+        </div>
+        <div class="form-group">
+          <label>City <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.city" placeholder="Mumbai">
+        </div>
+        <div class="form-group">
+          <label>State <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.state" placeholder="Maharashtra">
+        </div>
+        <div class="form-group">
+          <label>PIN Code <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="addressForm.pin_code" placeholder="400001" maxlength="6">
+        </div>
+        <div class="form-group">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" [(ngModel)]="addressForm.phone_no" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group full-width">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="addressForm.is_default">
+            Set as default address
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="addr-panel-footer">
+      <button class="btn-save-address" (click)="saveAddress()" [disabled]="addressFormSaving">
+        <span *ngIf="!addressFormSaving">
+          <i class="fas fa-check"></i> {{ addressFormMode === 'add' ? 'Save Address' : 'Update Address' }}
+        </span>
+        <span *ngIf="addressFormSaving"><i class="fas fa-spinner fa-spin"></i> Saving…</span>
+      </button>
+    </div>
+  </ng-container>
+
+</div>
+
+<app-footer></app-footer>

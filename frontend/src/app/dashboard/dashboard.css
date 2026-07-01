@@ -506,3 +506,233 @@
     padding: 20px;
   }
 }
+
+/* ─── Orders Loading ─── */
+.orders-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #888;
+  font-size: 15px;
+  padding: 30px 0;
+  justify-content: center;
+}
+
+.orders-loading i {
+  color: #ED661B;
+}
+
+/* ─── Order count badge in panel header ─── */
+.order-count-badge {
+  background: #fdf2e9;
+  color: #ED661B;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(237, 102, 27, 0.25);
+}
+
+/* ─── Order list ─── */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ─── Individual order card ─── */
+.order-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Collapsed header row ─── */
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: #fafafa;
+  gap: 12px;
+  transition: background 0.15s;
+}
+
+.order-card-header:hover {
+  background: #f5f5f5;
+}
+
+.order-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-id {
+  font-weight: 700;
+  font-size: 15px;
+  color: #2c3e50;
+  font-family: var(--head-font);
+}
+
+.order-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.order-summary-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.order-total {
+  font-weight: 700;
+  font-size: 15px;
+  color: #2c3e50;
+}
+
+.order-chevron {
+  font-size: 13px;
+  color: #aaa;
+  transition: transform 0.2s;
+}
+
+/* ─── Status badges ─── */
+.order-status {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.status-pending   { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+.status-paid      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.status-shipped   { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+.status-delivered { background: #e8f5e9; color: #1b5e20; border: 1px solid #81c784; }
+.status-cancelled { background: #fce4e4; color: #c62828; border: 1px solid #ef9a9a; }
+
+/* ─── Expanded items body ─── */
+.order-items-body {
+  padding: 0 18px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: expandDown 0.18s ease;
+}
+
+@keyframes expandDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed #f0f0f0;
+  gap: 10px;
+}
+
+.order-item-row:last-of-type {
+  border-bottom: none;
+}
+
+.order-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.order-item-variant {
+  font-size: 12px;
+  color: #999;
+}
+
+.order-item-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.order-item-qty {
+  font-size: 13px;
+  color: #777;
+}
+
+.order-item-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* ─── Delivery address line ─── */
+.order-delivery-addr {
+  font-size: 12.5px;
+  color: #888;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding-top: 4px;
+  line-height: 1.5;
+}
+
+.order-delivery-addr i {
+  color: #ED661B;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Order card footer row ─── */
+.order-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4px;
+}
+
+.order-payment-method {
+  font-size: 13px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-payment-method i {
+  color: #aaa;
+}
+
+.order-grand-total {
+  font-size: 14px;
+  color: #555;
+}
+
+.order-grand-total strong {
+  color: #2c3e50;
+  font-size: 15px;
+}

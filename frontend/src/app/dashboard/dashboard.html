@@ -5,12 +5,13 @@
     <div class="banner-overlay"></div>
     <div class="banner-content">
       <h1 class="welcome-text">Hello, {{ user?.first_name || 'Valued Customer' }}!</h1>
-      <p class="subtitle-text">Welcome back to your Crumbs account dashboard. Manage your orders, addresses, and wishlist here.</p>
+      <p class="subtitle-text">Welcome back to your Crumbs account. Manage your orders, addresses, and wishlist here.</p>
     </div>
   </div>
 
   <div class="dashboard-layout">
-    <!-- Sidebar Navigation -->
+
+    <!-- ── Sidebar ── -->
     <aside class="dashboard-sidebar">
       <div class="user-profile-summary">
         <div class="avatar-circle">
@@ -54,9 +55,10 @@
       </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- ── Main Content ── -->
     <main class="dashboard-content">
-      <!-- Quick Stats Grid -->
+
+      <!-- Stats -->
       <section class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon-wrapper orders-icon">
@@ -64,10 +66,9 @@
           </div>
           <div class="stat-info">
             <span class="stat-label">Total Orders</span>
-            <span class="stat-value">0</span>
+            <span class="stat-value">{{ orders.length }}</span>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-icon-wrapper wishlist-icon">
             <i class="fas fa-heart"></i>
@@ -77,7 +78,6 @@
             <span class="stat-value">{{ wishlistItemsCount }}</span>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-icon-wrapper address-icon">
             <i class="fas fa-map-marked-alt"></i>
@@ -89,30 +89,83 @@
         </div>
       </section>
 
-      <!-- Main Dashboard Panels -->
+      <!-- Panels -->
       <div class="content-panels">
-        <!-- Orders History Panel -->
+
+        <!-- ── Order History Panel ── -->
         <div class="panel-card orders-panel">
           <div class="panel-header">
             <h2>Order History</h2>
+            <span class="order-count-badge" *ngIf="orders.length > 0">{{ orders.length }} order{{ orders.length !== 1 ? 's' : '' }}</span>
           </div>
           <div class="panel-body">
-            <!-- Empty State for Orders -->
-            <div class="empty-orders-state">
+
+            <!-- Loading -->
+            <div class="orders-loading" *ngIf="ordersLoading">
+              <i class="fas fa-spinner fa-spin"></i> Loading orders…
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-orders-state" *ngIf="!ordersLoading && orders.length === 0">
               <div class="empty-icon-circle">
                 <i class="fas fa-box-open"></i>
               </div>
               <h3>No Orders Placed Yet</h3>
-              <p>Looks like you haven't placed any orders with us. Explore our freshly made products and delicious treats today!</p>
+              <p>Explore our freshly made products and place your first order today!</p>
               <a href="/collections" class="shop-now-btn">Start Shopping</a>
             </div>
+
+            <!-- Order list -->
+            <div class="order-list" *ngIf="!ordersLoading && orders.length > 0">
+              <div class="order-card" *ngFor="let order of orders">
+
+                <!-- Order header row (always visible, clickable to expand) -->
+                <div class="order-card-header" (click)="toggleOrder(order.id)">
+                  <div class="order-meta">
+                    <span class="order-id">#{{ order.id }}</span>
+                    <span class="order-date">{{ order.created_at | date:'d MMM yyyy' }}</span>
+                  </div>
+                  <div class="order-summary-right">
+                    <span [class]="'order-status ' + statusClass(order.status)">{{ order.status }}</span>
+                    <span class="order-total">Rs. {{ order.total_amount }}</span>
+                    <i class="fas order-chevron" [class.fa-chevron-up]="expandedOrderId === order.id" [class.fa-chevron-down]="expandedOrderId !== order.id"></i>
+                  </div>
+                </div>
+
+                <!-- Expanded items -->
+                <div class="order-items-body" *ngIf="expandedOrderId === order.id">
+                  <div class="order-item-row" *ngFor="let item of order.items">
+                    <div class="order-item-info">
+                      <span class="order-item-name">{{ item.product_name }}</span>
+                      <span class="order-item-variant">{{ item.variant_weight }}</span>
+                    </div>
+                    <div class="order-item-right">
+                      <span class="order-item-qty">× {{ item.quantity }}</span>
+                      <span class="order-item-price">Rs. {{ item.subtotal }}</span>
+                    </div>
+                  </div>
+
+                  <div class="order-delivery-addr">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ order.full_name }}, {{ order.address_line }}, {{ order.city }}, {{ order.state }} – {{ order.pincode }}
+                  </div>
+
+                  <div class="order-footer-row">
+                    <span class="order-payment-method"><i class="fas fa-wallet"></i> {{ order.payment_method }}</span>
+                    <span class="order-grand-total">Total: <strong>Rs. {{ order.total_amount }}</strong></span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <!-- Default Address Panel -->
+        <!-- ── Default Address Panel ── -->
         <div class="panel-card address-panel">
           <div class="panel-header">
-            <h2>Default Shipping Address</h2>
+            <h2>Default Address</h2>
             <a href="/account/address" class="manage-link">Manage</a>
           </div>
           <div class="panel-body">
@@ -124,16 +177,17 @@
               <div class="address-details">
                 <p>{{ defaultAddress.address }}</p>
                 <p *ngIf="defaultAddress.apartment">{{ defaultAddress.apartment }}</p>
-                <p>{{ defaultAddress.city }}, {{ defaultAddress.state }} - {{ defaultAddress.pin_code }}</p>
+                <p>{{ defaultAddress.city }}, {{ defaultAddress.state }} – {{ defaultAddress.pin_code }}</p>
                 <p class="phone-number"><i class="fas fa-phone-alt"></i> {{ defaultAddress.phone_no }}</p>
               </div>
             </div>
             <div class="empty-address-state" *ngIf="!defaultAddress">
-              <p>You haven't set a default shipping address yet.</p>
+              <p>No default shipping address set yet.</p>
               <a href="/account/address" class="add-address-btn"><i class="fas fa-plus"></i> Add Address</a>
             </div>
           </div>
         </div>
+
       </div>
     </main>
   </div>

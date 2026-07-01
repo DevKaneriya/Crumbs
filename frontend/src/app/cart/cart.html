@@ -58,11 +58,7 @@
                 <span class="total-head">Net Total</span>
                 <span class="total-amount">Rs.{{ totalAmount }}</span>
             </div>
-            <button (click)="navigate('checkout')" class="checkout-button">
-                <span>Proceed to Checkout</span>
-                <span class="payment"><img src="https://cdn.gokwik.co/v4/images/upi-icons.svg"></span>
-                <span><img src="https://cdn.gokwik.co/v4/images/right-arrow.svg"></span>
-            </button>
+            <button class="checkout-btn" (click)="navigate('/checkout')">PROCEED TO CHECKOUT</button>
         </div>
 
     </div>

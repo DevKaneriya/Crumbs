@@ -173,19 +173,29 @@ svg {
     font-weight: 600;
 }
 
-.checkout button {
-    width: 95%;
-    border: none;
-    border-radius: 10px;
-    background-color: #ED661B;
+.checkout-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--orange);
     color: white;
-    padding: 10px;
-    margin: 0 auto;
-    font-size: 17px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--head-font);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 15px;
 }
 
-.payment {
-    padding: 0 10px;
+.checkout-btn:hover {
+    background-color: #df8c10;
+}
+
+.shipping-note {
+    font-size: 12px;
+    color: #777;
+    text-align: center;
 }
 
 

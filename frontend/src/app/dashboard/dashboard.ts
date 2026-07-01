@@ -6,6 +6,7 @@ import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
 import { AddressService, Address } from '../../services/address-service';
 import { Wishlistservice } from '../../services/wishlistservice';
+import { OrderService, Order } from '../../services/order.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,31 +24,27 @@ export class Dashboard implements OnInit {
   defaultAddress: Address | null = null;
   wishlistItemsCount = 0;
 
+  orders: Order[] = [];
+  ordersLoading = true;
+  expandedOrderId: number | null = null;
+
   constructor(
     public auth: Auth,
     private router: Router,
     private addressService: AddressService,
-    private wishlistService: Wishlistservice
-  ){}
+    private wishlistService: Wishlistservice,
+    private orderService: OrderService
+  ) {}
 
   ngOnInit() {
-    // Double-check authentication on component init
     if (!this.auth.isLoggedIn()) {
-      this.router.navigate(['/account/login'], { 
-        queryParams: { returnUrl: '/account' }
-      });
+      this.router.navigate(['/account/login'], { queryParams: { returnUrl: '/account' } });
       return;
     }
 
-    // Subscribe to auth user
-    this.auth.currentUser$.subscribe(user => {
-      this.user = user;
-    });
-
-    // Load addresses to find default
+    this.auth.currentUser$.subscribe(user => { this.user = user; });
     this.loadAddresses();
-
-    // Get wishlist count
+    this.loadOrders();
     this.wishlistItemsCount = this.wishlistService.wishlistCount();
   }
 
@@ -55,10 +52,40 @@ export class Dashboard implements OnInit {
     this.addressService.getAddresses().subscribe({
       next: (data) => {
         this.addresses = data;
-        this.defaultAddress = data.find(addr => addr.is_default) || (data.length > 0 ? data[0] : null);
+        this.defaultAddress = data.find(a => a.is_default) ?? (data[0] ?? null);
       },
-      error: (err) => console.error('Error loading addresses for dashboard:', err)
+      error: (err) => console.error('Error loading addresses:', err)
     });
+  }
+
+  loadOrders() {
+    this.ordersLoading = true;
+    this.orderService.getMyOrders().subscribe({
+      next: (data) => {
+        this.orders = data;
+        this.ordersLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading orders:', err);
+        this.ordersLoading = false;
+      }
+    });
+  }
+
+  toggleOrder(orderId: number) {
+    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+  }
+
+  /** Returns a CSS class name based on order status */
+  statusClass(status: string): string {
+    const map: Record<string, string> = {
+      Pending:   'status-pending',
+      Paid:      'status-paid',
+      Shipped:   'status-shipped',
+      Delivered: 'status-delivered',
+      Cancelled: 'status-cancelled',
+    };
+    return map[status] ?? 'status-pending';
   }
 
   logout() {
@@ -75,5 +102,4 @@ export class Dashboard implements OnInit {
       }
     });
   }
-
 }

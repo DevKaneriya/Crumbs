@@ -19,9 +19,11 @@ import { authGuard } from '../guards/auth.guard';
 import { CustomizedOrder } from './customized-order/customized-order';
 import { TrackOrder } from './track-order/track-order';
 import { ReturnRefund } from './return-refund/return-refund';
+import { CheckoutComponent } from './checkout/checkout';
 
 export const routes: Routes = [
     { path: '', component: Home },
+    { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
     { path: 'contact', component: Contact },
     { path: 'privacy', component: PrivacyPolicy },
     { path: 'terms', component: Terms },
