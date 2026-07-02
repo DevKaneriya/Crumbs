@@ -85,8 +85,11 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # Send welcome email asynchronously via Celery
-        send_registration_success_email_task.delay(user.email, user.first_name or user.username)
+        # Send welcome email — fire and forget, never block registration on email failures
+        try:
+            send_registration_success_email_task.delay(user.email, user.first_name or user.username)
+        except Exception:
+            pass
 
         refresh = RefreshToken.for_user(user)
         response = Response(
@@ -109,8 +112,11 @@ class LoginView(APIView):
         data = serializer.validated_data
 
         user_payload = data['user']
-        # Send login notification email asynchronously via Celery
-        send_login_success_email_task.delay(user_payload['email'], user_payload['name'])
+        # Send login notification email — fire and forget, never block login on email failures
+        try:
+            send_login_success_email_task.delay(user_payload['email'], user_payload['name'])
+        except Exception:
+            pass
 
         response = Response(
             {

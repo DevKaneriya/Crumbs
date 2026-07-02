@@ -6,11 +6,15 @@ import { Cartservice, CartItem } from '../../services/cartservice';
 import { Auth } from '../../services/auth';
 import { CatalogService } from '../../services/catalog.service';
 import { AddressService, Address } from '../../services/address-service';
+import { OrderService } from '../../services/order.service';
 import { ProductList } from '../../models/catalog.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
+
+// Razorpay is loaded via CDN in index.html; declare it so TypeScript is happy
+declare var Razorpay: any;
 
 @Component({
   selector: 'app-checkout',
@@ -29,12 +33,8 @@ export class CheckoutComponent implements OnInit {
   selectedAddress: Address | null = null;
   addressesLoading = true;
 
-  /** Controls whether the address picker panel is open */
   showAddressPicker = false;
-
-  /** 'add' = new address form, 'edit' = editing an existing one, null = picker list */
   addressFormMode: 'add' | 'edit' | null = null;
-
   addressForm: Address = this.emptyAddressForm();
   addressFormSaving = false;
   addressFormError = '';
@@ -53,12 +53,16 @@ export class CheckoutComponent implements OnInit {
   orderSuccess = false;
   orderId = '';
 
+  // ─── Razorpay error state ────────────────────────────────────────────────
+  paymentError = '';
+
   constructor(
     public cartService: Cartservice,
     private auth: Auth,
     private router: Router,
     private catalogService: CatalogService,
     private addressService: AddressService,
+    private orderService: OrderService,
     private http: HttpClient
   ) {
     effect(() => { this.loadCart(); });
@@ -88,7 +92,6 @@ export class CheckoutComponent implements OnInit {
     this.addressService.getAddresses().subscribe({
       next: (list) => {
         this.addresses = list;
-        // Pick the default address, fall back to the first one
         this.selectedAddress =
           list.find(a => a.is_default) ?? (list.length > 0 ? list[0] : null);
         this.addressesLoading = false;
@@ -147,7 +150,6 @@ export class CheckoutComponent implements OnInit {
       this.addressService.addAddress(this.addressForm).subscribe({
         next: (saved) => {
           this.addresses.push(saved);
-          // Auto-select the newly added address
           this.selectedAddress = saved;
           this.addressFormSaving = false;
           this.closeAddressPicker();
@@ -195,15 +197,8 @@ export class CheckoutComponent implements OnInit {
 
   private emptyAddressForm(): Address {
     return {
-      first_name: '',
-      last_name: '',
-      address: '',
-      apartment: '',
-      city: '',
-      state: '',
-      pin_code: '',
-      phone_no: '',
-      is_default: false
+      first_name: '', last_name: '', address: '', apartment: '',
+      city: '', state: '', pin_code: '', phone_no: '', is_default: false
     };
   }
 
@@ -241,9 +236,14 @@ export class CheckoutComponent implements OnInit {
 
   setPaymentMethod(method: string) {
     this.paymentMethod = method;
+    this.paymentError = '';
   }
 
-  // ─── Place Order ─────────────────────────────────────────────────────────
+  get isCOD(): boolean {
+    return this.paymentMethod === 'COD';
+  }
+
+  // ─── Place Order (entry point) ────────────────────────────────────────────
 
   placeOrder() {
     if (this.cartItems.length === 0) return;
@@ -253,30 +253,146 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    this.isPlacingOrder = true;
+    this.paymentError = '';
 
-    const addr = this.selectedAddress;
+    if (this.isCOD) {
+      this.placeCodOrder();
+    } else {
+      this.initiateRazorpayPayment();
+    }
+  }
+
+  // ─── COD flow (unchanged) ─────────────────────────────────────────────────
+
+  private placeCodOrder() {
+    this.isPlacingOrder = true;
+    const addr = this.selectedAddress!;
     const payload = {
-      full_name:    `${addr.first_name} ${addr.last_name}`,
-      phone:        addr.phone_no,
-      address_line: addr.apartment ? `${addr.address}, ${addr.apartment}` : addr.address,
-      city:         addr.city,
-      state:        addr.state,
-      pincode:      addr.pin_code,
-      payment_method: this.paymentMethod
+      full_name:      `${addr.first_name} ${addr.last_name}`,
+      phone:          addr.phone_no,
+      address_line:   addr.apartment ? `${addr.address}, ${addr.apartment}` : addr.address,
+      city:           addr.city,
+      state:          addr.state,
+      pincode:        addr.pin_code,
+      payment_method: 'COD'
     };
 
-    this.http.post<any>(`${environment.apiUrl}/orders/checkout/`, payload, { withCredentials: true }).subscribe({
-      next: (res) => {
+    // COD still uses the original single-step checkout endpoint
+    this.http.post<any>(
+      `${environment.apiUrl}/orders/checkout/`,
+      payload,
+      { withCredentials: true }
+    ).subscribe({
+      next: (res: any) => {
         this.isPlacingOrder = false;
         this.orderSuccess = true;
         this.orderId = res.id;
         this.cartService.clearCart(true);
       },
+      error: (err: any) => {
+        this.isPlacingOrder = false;
+        this.paymentError = err.error?.error || 'Failed to place order. Please try again.';
+      }
+    });
+  }
+
+  // ─── Razorpay flow ────────────────────────────────────────────────────────
+
+  private initiateRazorpayPayment() {
+    this.isPlacingOrder = true;
+    const addr = this.selectedAddress!;
+
+    const createPayload = {
+      full_name:      `${addr.first_name} ${addr.last_name}`,
+      phone:          addr.phone_no,
+      address_line:   addr.apartment ? `${addr.address}, ${addr.apartment}` : addr.address,
+      city:           addr.city,
+      state:          addr.state,
+      pincode:        addr.pin_code,
+      payment_method: this.paymentMethod
+    };
+
+    // Step 1 — create Razorpay order on backend
+    this.orderService.createRazorpayOrder(createPayload).subscribe({
+      next: (rzpOrder) => {
+        this.isPlacingOrder = false;
+        this.openRazorpayModal(rzpOrder);
+      },
       error: (err) => {
         this.isPlacingOrder = false;
-        alert(err.error?.error || 'Failed to place order. Please try again.');
-        console.error(err);
+        this.paymentError = err.error?.error || 'Could not initiate payment. Please try again.';
+      }
+    });
+  }
+
+  private openRazorpayModal(rzpOrder: any) {
+    const addr = this.selectedAddress!;
+
+    const options = {
+      key:          rzpOrder.key_id,
+      amount:       rzpOrder.amount,        // paise — Razorpay displays ₹ automatically
+      currency:     rzpOrder.currency,
+      name:         'Crumbs',
+      description:  `Order #${rzpOrder.order_db_id}`,
+      order_id:     rzpOrder.razorpay_order_id,
+      prefill: {
+        name:    `${addr.first_name} ${addr.last_name}`,
+        contact: addr.phone_no,
+      },
+      theme: {
+        color: '#4f46e5'                    // match your brand colour
+      },
+      modal: {
+        ondismiss: () => {
+          // User closed the modal without paying
+          this.isPlacingOrder = false;
+          this.paymentError = 'Payment was cancelled. You can try again.';
+        }
+      },
+      // Step 2 — called by Razorpay on successful payment
+      handler: (response: any) => {
+        this.verifyPayment(response, rzpOrder.order_db_id);
+      }
+    };
+
+    const rzp = new Razorpay(options);
+
+    // Handle payment failures inside the modal (wrong card, etc.)
+    rzp.on('payment.failed', (response: any) => {
+      this.isPlacingOrder = false;
+      this.paymentError =
+        response.error?.description ||
+        'Payment failed. Please try a different payment method.';
+      rzp.close();
+    });
+
+    rzp.open();
+  }
+
+  private verifyPayment(razorpayResponse: any, orderDbId: number) {
+    this.isPlacingOrder = true;
+    this.paymentError = '';
+
+    const verifyPayload = {
+      razorpay_order_id:   razorpayResponse.razorpay_order_id,
+      razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+      razorpay_signature:  razorpayResponse.razorpay_signature,
+      order_db_id:         orderDbId
+    };
+
+    this.orderService.verifyRazorpayPayment(verifyPayload).subscribe({
+      next: (order) => {
+        this.isPlacingOrder = false;
+        this.orderSuccess = true;
+        this.orderId = String(order.id);
+        this.cartService.clearCart(true);
+      },
+      error: (err) => {
+        this.isPlacingOrder = false;
+        this.paymentError =
+          err.error?.error ||
+          'Payment verification failed. Please contact support with your payment ID: ' +
+          razorpayResponse.razorpay_payment_id;
       }
     });
   }

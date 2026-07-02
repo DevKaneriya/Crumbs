@@ -26,8 +26,36 @@ export interface Order {
   status: 'Pending' | 'Paid' | 'Shipped' | 'Delivered' | 'Cancelled';
   payment_method: string;
   payment_id: string | null;
+  razorpay_order_id: string | null;
   created_at: string;
   items: OrderItem[];
+}
+
+// ── Razorpay types ─────────────────────────────────────────────────────────
+
+export interface RazorpayOrderResponse {
+  razorpay_order_id: string;
+  amount: number;        // in paise
+  currency: string;
+  key_id: string;
+  order_db_id: number;
+}
+
+export interface RazorpayCreateOrderPayload {
+  full_name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  state: string;
+  pincode: string;
+  payment_method: string;
+}
+
+export interface RazorpayVerifyPayload {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+  order_db_id: number;
 }
 
 // ── Admin order types ──────────────────────────────────────────────────────
@@ -151,6 +179,32 @@ export class OrderService {
 
   getMyOrderDetail(id: number): Observable<Order> {
     return this.http.get<Order>(`${this.base}/my-orders/${id}/`, { withCredentials: true });
+  }
+
+  /**
+   * Step 1: Call backend to create a Razorpay order.
+   * Returns the razorpay_order_id, amount (paise), currency, key_id, and
+   * the Django order's DB id so we can reference it during verification.
+   */
+  createRazorpayOrder(payload: RazorpayCreateOrderPayload): Observable<RazorpayOrderResponse> {
+    return this.http.post<RazorpayOrderResponse>(
+      `${this.base}/razorpay/create-order/`,
+      payload,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Step 2: After Razorpay modal succeeds, send the three Razorpay identifiers
+   * to the backend for HMAC-SHA256 signature verification.
+   * On success the backend marks the order Paid and clears the cart.
+   */
+  verifyRazorpayPayment(payload: RazorpayVerifyPayload): Observable<Order> {
+    return this.http.post<Order>(
+      `${this.base}/razorpay/verify-payment/`,
+      payload,
+      { withCredentials: true }
+    );
   }
 
   // ── Admin orders ──────────────────────────────────────────────────────────

@@ -9,7 +9,10 @@ class OrderItemInline(admin.TabularInline):
     fields = ('product_name', 'variant_weight', 'quantity', 'price_at_purchase', 'get_subtotal')
 
     def get_subtotal(self, obj):
-        return f"Rs. {obj.get_subtotal()}"
+        if obj is None or obj.pk is None:
+            return '-'
+        subtotal = obj.get_subtotal()
+        return f"Rs. {subtotal}" if subtotal else '-'
     get_subtotal.short_description = 'Subtotal'
 
 
@@ -32,7 +35,7 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('id', 'user__email', 'full_name', 'phone', 'pincode')
     readonly_fields = (
         'user', 'full_name', 'phone', 'address_line', 'city', 'state', 'pincode',
-        'total_amount', 'payment_method', 'payment_id', 'created_at', 'updated_at',
+        'total_amount', 'payment_method', 'payment_id', 'razorpay_order_id', 'created_at', 'updated_at',
     )
     list_editable = ('status',)
     ordering = ('-created_at',)
@@ -40,7 +43,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Order Info', {
-            'fields': ('user', 'status', 'total_amount', 'payment_method', 'payment_id', 'created_at', 'updated_at')
+            'fields': ('user', 'status', 'total_amount', 'payment_method', 'payment_id', 'razorpay_order_id', 'created_at', 'updated_at')
         }),
         ('Shipping Address', {
             'fields': ('full_name', 'phone', 'address_line', 'city', 'state', 'pincode')

@@ -1,16 +1,28 @@
 from django.db.models import Q, Count, Sum, Max
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
+import razorpay
+import hmac
+import hashlib
+import json
+import logging
+
+from django.conf import settings as django_settings
+
 from .models import Order, OrderItem, OrderStatusHistory
 from .serializers import OrderSerializer, AdminOrderSerializer, OrderUpdateSerializer, AdminLogsSerializer
 from catalog.models import Product, ProductVariant
 from accounts.models import CartItem
 from decimal import Decimal
+
+logger = logging.getLogger(__name__)
 
 
 # ===========================================================================
@@ -393,3 +405,331 @@ class AdminLogsView(APIView):
 
         serializer = AdminLogsSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# ===========================================================================
+# Razorpay payment views
+# ===========================================================================
+
+def _razorpay_client():
+    """Return an authenticated Razorpay client using settings credentials."""
+    return razorpay.Client(
+        auth=(django_settings.RAZORPAY_KEY_ID, django_settings.RAZORPAY_KEY_SECRET)
+    )
+
+
+def _build_order_items_data(cart_items):
+    """
+    Validate cart against DB prices and return (total_amount, order_items_data).
+    Raises ValueError with a user-facing message on any issue.
+    """
+    total_amount = Decimal('0.00')
+    order_items_data = []
+
+    for item in cart_items:
+        try:
+            product = Product.objects.get(id=item.product_id)
+            variant = ProductVariant.objects.get(product=product, weight=item.variant)
+        except (Product.DoesNotExist, ProductVariant.DoesNotExist):
+            raise ValueError(f'Product or variant not found for item {item.product_id}')
+
+        if not variant.in_stock:
+            raise ValueError(
+                f'{product.name} ({item.variant}) is currently out of stock. '
+                'Please remove it from your cart and try again.'
+            )
+
+        price = variant.discounted_price
+        total_amount += price * item.quantity
+        order_items_data.append({
+            'product': product,
+            'product_name': product.name,
+            'variant_weight': item.variant,
+            'quantity': item.quantity,
+            'price_at_purchase': price,
+        })
+
+    return total_amount, order_items_data
+
+
+class CreateRazorpayOrderView(APIView):
+    """
+    POST /api/orders/razorpay/create-order/
+
+    Step 1 of the Razorpay flow. Validates the cart, creates a Razorpay order,
+    persists a Django Order (status=Pending) and returns the data needed to
+    open the Razorpay checkout modal on the frontend.
+
+    Request body:
+        full_name, phone, address_line, city, state, pincode, payment_method
+    Response:
+        { razorpay_order_id, amount, currency, key_id, order_db_id }
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+
+        # 1. Validate cart
+        cart_items = CartItem.objects.filter(user=user)
+        if not cart_items.exists():
+            return Response({'error': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 2. Validate shipping details
+        full_name    = data.get('full_name', '').strip()
+        phone        = data.get('phone', '').strip()
+        address_line = data.get('address_line', '').strip()
+        city         = data.get('city', '').strip()
+        state        = data.get('state', '').strip()
+        pincode      = data.get('pincode', '').strip()
+        payment_method = data.get('payment_method', 'Card')
+
+        if not all([full_name, phone, address_line, city, state, pincode]):
+            return Response(
+                {'error': 'Please provide all shipping details.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Calculate total from DB (server-side; never trust client prices)
+        try:
+            total_amount, order_items_data = _build_order_items_data(cart_items)
+        except ValueError as exc:
+            return Response({'error': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 4. Create Razorpay order (amount in paise — multiply by 100)
+        try:
+            client = _razorpay_client()
+            rz_order = client.order.create({
+                'amount': int(total_amount * 100),  # paise
+                'currency': 'INR',
+                'receipt': f'crumbs_user_{user.id}',
+                'payment_capture': 1,               # auto-capture on payment
+            })
+        except Exception as exc:
+            logger.error('Razorpay order creation failed: %s', exc, exc_info=True)
+            return Response(
+                {'error': 'Payment gateway error. Please try again.'},
+                status=status.HTTP_502_BAD_GATEWAY
+            )
+
+        # 5. Persist a Django Order (Pending — confirmed only after payment verify)
+        order = Order.objects.create(
+            user=user,
+            full_name=full_name,
+            phone=phone,
+            address_line=address_line,
+            city=city,
+            state=state,
+            pincode=pincode,
+            total_amount=total_amount,
+            payment_method=payment_method,
+            status='Pending',
+            razorpay_order_id=rz_order['id'],
+        )
+
+        for item_data in order_items_data:
+            OrderItem.objects.create(
+                order=order,
+                product=item_data['product'],
+                product_name=item_data['product_name'],
+                variant_weight=item_data['variant_weight'],
+                quantity=item_data['quantity'],
+                price_at_purchase=item_data['price_at_purchase'],
+            )
+
+        return Response({
+            'razorpay_order_id': rz_order['id'],
+            'amount':            rz_order['amount'],   # paise
+            'currency':          rz_order['currency'],
+            'key_id':            django_settings.RAZORPAY_KEY_ID,
+            'order_db_id':       order.id,
+        }, status=status.HTTP_201_CREATED)
+
+
+class VerifyRazorpayPaymentView(APIView):
+    """
+    POST /api/orders/razorpay/verify-payment/
+
+    Step 2 of the Razorpay flow. Called by the frontend after the Razorpay
+    modal reports a successful payment. Verifies the HMAC-SHA256 signature,
+    marks the order as Paid, clears the cart, and returns the completed order.
+
+    Request body:
+        razorpay_order_id, razorpay_payment_id, razorpay_signature, order_db_id
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+
+        razorpay_order_id   = data.get('razorpay_order_id', '')
+        razorpay_payment_id = data.get('razorpay_payment_id', '')
+        razorpay_signature  = data.get('razorpay_signature', '')
+        order_db_id         = data.get('order_db_id')
+
+        if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature, order_db_id]):
+            return Response({'error': 'Missing payment verification fields.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 1. Fetch the Django order — must belong to the logged-in user
+        order = get_object_or_404(Order, pk=order_db_id, user=request.user)
+
+        # Guard: already verified (idempotent)
+        if order.status == 'Paid':
+            from .serializers import OrderSerializer as OS
+            return Response(OS(order).data, status=status.HTTP_200_OK)
+
+        # 2. Verify HMAC-SHA256 signature
+        try:
+            client = _razorpay_client()
+            client.utility.verify_payment_signature({
+                'razorpay_order_id':   razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature':  razorpay_signature,
+            })
+        except razorpay.errors.SignatureVerificationError:
+            logger.warning(
+                'Razorpay signature mismatch for order %s (rzp order %s)',
+                order_db_id, razorpay_order_id
+            )
+            # Mark the pending order as Cancelled so it doesn't sit open forever
+            order.status = 'Cancelled'
+            order.save(update_fields=['status', 'updated_at'])
+            return Response(
+                {'error': 'Payment verification failed. Your order has been cancelled.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Mark order as Paid and record the Razorpay payment ID
+        old_status   = order.status
+        order.status     = 'Paid'
+        order.payment_id = razorpay_payment_id
+        order.save(update_fields=['status', 'payment_id', 'updated_at'])
+
+        OrderStatusHistory.objects.create(
+            order=order,
+            old_status=old_status,
+            new_status='Paid',
+            note=f'Razorpay payment captured: {razorpay_payment_id}',
+        )
+
+        # 4. Clear the user's cart
+        CartItem.objects.filter(user=request.user).delete()
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class RazorpayWebhookView(APIView):
+    """
+    POST /api/orders/razorpay/webhook/
+
+    Receives Razorpay webhook events and updates order status accordingly.
+    Acts as a reliable backstop in case the frontend verify call never reaches
+    the backend (network drop, browser close, etc.).
+
+    Supported events:
+        payment.captured  → order status Paid
+        payment.failed    → order status Cancelled
+
+    Security: validates X-Razorpay-Signature header using RAZORPAY_WEBHOOK_SECRET.
+    """
+    authentication_classes = []   # webhooks are not user-authenticated
+    permission_classes = []
+
+    def post(self, request):
+        webhook_secret = django_settings.RAZORPAY_WEBHOOK_SECRET
+
+        # 1. Verify webhook signature if secret is configured
+        if webhook_secret:
+            received_sig = request.headers.get('X-Razorpay-Signature', '')
+            body_bytes   = request.body  # raw bytes — must read before DRF parses
+
+            expected_sig = hmac.new(
+                webhook_secret.encode('utf-8'),
+                body_bytes,
+                hashlib.sha256
+            ).hexdigest()
+
+            if not hmac.compare_digest(expected_sig, received_sig):
+                logger.warning('Razorpay webhook: invalid signature')
+                return Response({'error': 'Invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 2. Parse event
+        try:
+            payload = json.loads(request.body)
+        except (json.JSONDecodeError, Exception):
+            return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
+
+        event = payload.get('event', '')
+
+        if event == 'payment.captured':
+            self._handle_payment_captured(payload)
+
+        elif event == 'payment.failed':
+            self._handle_payment_failed(payload)
+
+        # Always return 200 so Razorpay doesn't keep retrying
+        return Response({'status': 'ok'}, status=status.HTTP_200_OK)
+
+    # ── helpers ──────────────────────────────────────────────────────────────
+
+    def _handle_payment_captured(self, payload):
+        try:
+            payment_entity   = payload['payload']['payment']['entity']
+            razorpay_order_id  = payment_entity.get('order_id', '')
+            razorpay_payment_id = payment_entity.get('id', '')
+
+            order = Order.objects.filter(razorpay_order_id=razorpay_order_id).first()
+            if not order:
+                logger.warning('Webhook payment.captured: no order for rzp order %s', razorpay_order_id)
+                return
+
+            if order.status == 'Paid':
+                return  # Already processed — idempotent
+
+            old_status       = order.status
+            order.status     = 'Paid'
+            order.payment_id = razorpay_payment_id
+            order.save(update_fields=['status', 'payment_id', 'updated_at'])
+
+            OrderStatusHistory.objects.create(
+                order=order,
+                old_status=old_status,
+                new_status='Paid',
+                note=f'[Webhook] Razorpay payment captured: {razorpay_payment_id}',
+            )
+
+            # Clear cart as a safety net (normally cleared during verify step)
+            CartItem.objects.filter(user=order.user).delete()
+
+            logger.info('Webhook: order #%s marked Paid via payment.captured', order.id)
+
+        except (KeyError, Exception) as exc:
+            logger.error('Webhook payment.captured handler error: %s', exc)
+
+    def _handle_payment_failed(self, payload):
+        try:
+            payment_entity    = payload['payload']['payment']['entity']
+            razorpay_order_id = payment_entity.get('order_id', '')
+
+            order = Order.objects.filter(razorpay_order_id=razorpay_order_id).first()
+            if not order or order.status in ('Paid', 'Shipped', 'Delivered', 'Cancelled'):
+                return
+
+            old_status   = order.status
+            order.status = 'Cancelled'
+            order.save(update_fields=['status', 'updated_at'])
+
+            OrderStatusHistory.objects.create(
+                order=order,
+                old_status=old_status,
+                new_status='Cancelled',
+                note='[Webhook] Razorpay payment failed',
+            )
+
+            logger.info('Webhook: order #%s cancelled via payment.failed', order.id)
+
+        except (KeyError, Exception) as exc:
+            logger.error('Webhook payment.failed handler error: %s', exc)

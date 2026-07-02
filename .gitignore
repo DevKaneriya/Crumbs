@@ -33,6 +33,9 @@ backend/media/
 backend/staticfiles/
 backend/static/
 
+# Redis Windows binary (downloaded locally by start.bat)
+backend/Redis/
+
 # Backup files
 *.bak
 *.swp

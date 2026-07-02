@@ -139,7 +139,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   # 1 hour — practical for dev/test
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -148,7 +148,7 @@ SIMPLE_JWT = {
 
 AUTH_COOKIE_ACCESS = 'access_token'
 AUTH_COOKIE_REFRESH = 'refresh_token'
-AUTH_COOKIE_MAX_AGE_ACCESS = 60 * 5
+AUTH_COOKIE_MAX_AGE_ACCESS = 60 * 60        # 1 hour — matches ACCESS_TOKEN_LIFETIME
 AUTH_COOKIE_MAX_AGE_REFRESH = 60 * 60 * 24 * 7
 AUTH_COOKIE_SECURE = not DEBUG  # True in production (HTTPS only)
 AUTH_COOKIE_HTTP_ONLY = True
@@ -203,6 +203,14 @@ PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 # Frontend URL for password reset
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:4200')
+
+
+# ===========================================================================
+# Razorpay Payment Gateway
+# ===========================================================================
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_WEBHOOK_SECRET = os.environ.get('RAZORPAY_WEBHOOK_SECRET', '')
 
 
 # Logging Configuration
@@ -272,21 +280,27 @@ CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
 }
 
 # In development without Redis, run tasks synchronously (no worker needed)
+# EAGER_PROPAGATES is False so task exceptions never crash the calling view
 if not os.environ.get('REDIS_URL', ''):
     CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
+    CELERY_TASK_EAGER_PROPAGATES = False
 
 # Cache Backend — Redis in production, in-memory in development
 REDIS_URL = os.environ.get('REDIS_URL', '')
 
 if REDIS_URL:
     # Production: use Redis
+    # CONNECTION_POOL_KWARGS protocol=2 forces RESP2, required for Redis <= 6
+    # (redis-py v4+ defaults to RESP3 via HELLO 3, which Redis 5 doesn't support)
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": REDIS_URL,
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "CONNECTION_POOL_KWARGS": {
+                    "protocol": 2,
+                },
             }
         }
     }

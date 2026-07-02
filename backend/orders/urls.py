@@ -4,6 +4,10 @@ from .views import (
     CheckoutView,
     MyOrdersView,
     MyOrderDetailView,
+    # Razorpay payment
+    CreateRazorpayOrderView,
+    VerifyRazorpayPaymentView,
+    RazorpayWebhookView,
     # Admin / store owner
     AdminOrderListView,
     AdminOrderDetailView,
@@ -20,6 +24,13 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('my-orders/', MyOrdersView.as_view(), name='my_orders'),
     path('my-orders/<int:pk>/', MyOrderDetailView.as_view(), name='my_order_detail'),
+
+    # ------------------------------------------------------------------
+    # Razorpay payment endpoints
+    # ------------------------------------------------------------------
+    path('razorpay/create-order/',   CreateRazorpayOrderView.as_view(),   name='razorpay_create_order'),
+    path('razorpay/verify-payment/', VerifyRazorpayPaymentView.as_view(), name='razorpay_verify_payment'),
+    path('razorpay/webhook/',        RazorpayWebhookView.as_view(),        name='razorpay_webhook'),
 
     # ------------------------------------------------------------------
     # Store-owner / admin endpoints  (is_staff required)

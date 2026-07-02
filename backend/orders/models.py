@@ -35,7 +35,8 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     
     payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='COD')
-    payment_id = models.CharField(max_length=100, blank=True, null=True) # For Stripe/Razorpay
+    payment_id = models.CharField(max_length=100, blank=True, null=True)        # razorpay_payment_id after capture
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True) # razorpay_order_id from order create
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,6 +59,8 @@ class OrderItem(models.Model):
         return f"{self.quantity}x {self.product_name} ({self.variant_weight})"
 
     def get_subtotal(self):
+        if self.quantity is None or self.price_at_purchase is None:
+            return 0
         return self.quantity * self.price_at_purchase
 
 

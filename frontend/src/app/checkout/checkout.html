@@ -69,9 +69,15 @@
           </div>
         </div>
 
-        <div class="payment-note" *ngIf="paymentMethod !== 'COD'">
-          <i class="fas fa-info-circle"></i>
-          Note: In this demo environment, selecting "{{paymentMethod}}" will simulate a successful payment transaction without asking for real credentials.
+        <!-- Online payment info badge -->
+        <div class="payment-note" *ngIf="!isCOD">
+          <i class="fas fa-shield-alt"></i>
+          Payments are securely processed by Razorpay. Your card details are never stored on our servers.
+        </div>
+
+        <!-- Payment error -->
+        <div class="payment-error" *ngIf="paymentError">
+          <i class="fas fa-exclamation-circle"></i> {{ paymentError }}
         </div>
       </div>
 
@@ -116,7 +122,10 @@
           [disabled]="isPlacingOrder || cartItems.length === 0 || !selectedAddress"
           (click)="placeOrder()"
         >
-          <span *ngIf="!isPlacingOrder">Place Order</span>
+          <span *ngIf="!isPlacingOrder">
+            <ng-container *ngIf="isCOD">Place Order</ng-container>
+            <ng-container *ngIf="!isCOD"><i class="fas fa-lock"></i> Pay Rs. {{totalAmount | number:'1.2-2'}}</ng-container>
+          </span>
           <span *ngIf="isPlacingOrder"><i class="fas fa-spinner fa-spin"></i> Processing…</span>
         </button>
 

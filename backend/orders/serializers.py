@@ -21,7 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'full_name', 'phone', 'address_line', 'city',
             'state', 'pincode', 'total_amount', 'status', 'payment_method',
-            'payment_id', 'created_at', 'items'
+            'payment_id', 'razorpay_order_id', 'created_at', 'items'
         ]
         read_only_fields = ['total_amount', 'status', 'created_at']
 
@@ -54,7 +54,7 @@ class AdminOrderSerializer(serializers.ModelSerializer):
             'id', 'customer_email', 'full_name', 'phone',
             'address_line', 'city', 'state', 'pincode',
             'total_amount', 'status', 'payment_method', 'payment_id',
-            'created_at', 'updated_at',
+            'razorpay_order_id', 'created_at', 'updated_at',
             'items', 'status_history',
         ]
 
