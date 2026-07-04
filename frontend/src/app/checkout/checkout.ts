@@ -288,6 +288,7 @@ export class CheckoutComponent implements OnInit {
         this.orderSuccess = true;
         this.orderId = res.id;
         this.cartService.clearCart(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err: any) => {
         this.isPlacingOrder = false;
@@ -386,6 +387,7 @@ export class CheckoutComponent implements OnInit {
         this.orderSuccess = true;
         this.orderId = String(order.id);
         this.cartService.clearCart(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (err) => {
         this.isPlacingOrder = false;
