@@ -41,3 +41,8 @@ backend/Redis/
 *.swp
 *.swo
 *~
+.env.*
+credentials.json
+*.pem
+*.key
+.credentials
