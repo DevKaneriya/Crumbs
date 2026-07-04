@@ -1,0 +1,344 @@
+[
+  {
+    "short": "amchur-imli-churan",
+    "name": "Amchur Imli Churan",
+    "image": [
+      "assets/products/churan/amchur-imli-churan.webp",
+      "assets/products/churan/amchur-imli-churan-hover.webp"
+    ]
+  },
+  {
+    "short": "ayurvedic-digestive-mix",
+    "name": "Ayurvedic Digestive Mix",
+    "image": [
+      "assets/products/churan/ayurvedic-digestive-mix.webp",
+      "assets/products/churan/ayurvedic-digestive-mix-hover.webp",
+      "assets/products/churan/ayurvedic-digestive-mix-3.webp"
+    ]
+  },
+  {
+    "short": "chocolate-pan-fusion",
+    "name": "Chocolate Pan Fusion",
+    "image": [
+      "assets/products/pan/chocolate-pan-fusion.webp",
+      "assets/products/pan/chocolate-pan-fusion-hover.webp"
+    ]
+  },
+  {
+    "short": "cinnamon-spice-mix",
+    "name": "Cinnamon Spice Mix",
+    "image": [
+      "assets/products/mukhwas/cinnamon-spice-mix.webp",
+      "assets/products/mukhwas/cinnamon-spice-mix-hover.webp",
+      "assets/products/mukhwas/cinnamon-spice-mix-3.webp"
+    ]
+  },
+  {
+    "short": "classic-pan-supari-fusion",
+    "name": "Classic Pan Supari Fusion",
+    "image": [
+      "assets/products/best-sellers/classic-pan-supari-fusion.webp",
+      "assets/products/best-sellers/classic-pan-supari-fusion-hover.webp",
+      "assets/products/best-sellers/classic-pan-supari-fusion-3.webp"
+    ]
+  },
+  {
+    "short": "colorful-sugar-balls",
+    "name": "Colorful Sugar Balls",
+    "image": [
+      "assets/products/tiny-miny/colorful-sugar-balls.webp",
+      "assets/products/tiny-miny/colorful-sugar-balls-hover.webp"
+    ]
+  },
+  {
+    "short": "dhana-dal-special-mukhwas",
+    "name": "Dhana Dal Special Mukhwas",
+    "image": [
+      "assets/products/sugar-free/dhana-dal-special-mukhwas.webp",
+      "assets/products/sugar-free/dhana-dal-special-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "diabetic-friendly-ajwain-crunch",
+    "name": "Diabetic Friendly Ajwain Crunch",
+    "image": [
+      "assets/products/sugar-free/diabetic-friendly-ajwain-crunch.webp",
+      "assets/products/sugar-free/diabetic-friendly-ajwain-crunch-hover.webp"
+    ]
+  },
+  {
+    "short": "digestive-mukhwas",
+    "name": "Digestive Mukhwas",
+    "image": [
+      "assets/products/sugar-free/digestive-mukhwas.webp",
+      "assets/products/sugar-free/digestive-mukhwas-hover.webp",
+      "assets/products/sugar-free/digestive-mukhwas-3.webp",
+      "assets/products/sugar-free/digestive-mukhwas-4.webp",
+      "assets/products/sugar-free/digestive-mukhwas-5.webp"
+    ]
+  },
+  {
+    "short": "dilkhush-mukhwas",
+    "name": "Dilkhush Mukhwas",
+    "image": [
+      "assets/products/sugar-free/dilkhush-mukhwas.webp",
+      "assets/products/sugar-free/dilkhush-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "diwali-special-combo",
+    "name": "Diwali Special Combo",
+    "image": [
+      "assets/products/gifts-combos/diwali-special-combo.webp",
+      "assets/products/gifts-combos/diwali-special-combo-hover.webp",
+      "assets/products/gifts-combos/diwali-special-combo-3.webp"
+    ]
+  },
+  {
+    "short": "dry-fruit-delight",
+    "name": "Dry Fruit Delight",
+    "image": [
+      "assets/products/gifts-combos/dry-fruit-delight.webp",
+      "assets/products/gifts-combos/dry-fruit-delight-hover.webp"
+    ]
+  },
+  {
+    "short": "golden-elaichi-delight",
+    "name": "Golden Elaichi Delight",
+    "image": [
+      "assets/products/best-sellers/golden-elaichi-delight.webp",
+      "assets/products/best-sellers/golden-elaichi-delight-hover.webp"
+    ]
+  },
+  {
+    "short": "gujarati",
+    "name": "Gujarati",
+    "image": [
+      "assets/products/sugar-free/gujarati.webp",
+      "assets/products/sugar-free/gujarati-hover.webp"
+    ]
+  },
+  {
+    "short": "honey-coated-mukhwas",
+    "name": "Honey Coated Mukhwas",
+    "image": [
+      "assets/products/best-sellers/honey-coated-mukhwas.webp",
+      "assets/products/best-sellers/honey-coated-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "jeera-goli-digestive",
+    "name": "Jeera Goli Digestive",
+    "image": [
+      "assets/products/churan/jeera-goli-digestive.webp",
+      "assets/products/churan/jeera-goli-digestive-hover.webp",
+      "assets/products/churan/jeera-goli-digestive-3.webp"
+    ]
+  },
+  {
+    "short": "lemon-mint-refresher",
+    "name": "Lemon Mint Refresher",
+    "image": [
+      "assets/products/best-sellers/lemon-mint-refresher.webp",
+      "assets/products/best-sellers/lemon-mint-refresher-hover.webp"
+    ]
+  },
+  {
+    "short": "magic-mint-mukhwas",
+    "name": "Magic Mint Mukhwas",
+    "image": [
+      "assets/products/best-sellers/magic-mint-mukhwas.webp",
+      "assets/products/best-sellers/magic-mint-mukhwas-hover.webp",
+      "assets/products/best-sellers/magic-mint-mukhwas-3.webp"
+    ]
+  },
+  {
+    "short": "mini-chocolate-coated-nuts",
+    "name": "Mini Chocolate Coated Nuts",
+    "image": [
+      "assets/products/tiny-miny/mini-chocolate-coated-nuts.webp",
+      "assets/products/tiny-miny/mini-chocolate-coated-nuts-hover.webp",
+      "assets/products/tiny-miny/mini-chocolate-coated-nuts-3.webp"
+    ]
+  },
+  {
+    "short": "panchratna-churan",
+    "name": "Panchratna Churan",
+    "image": [
+      "assets/products/churan/panchratna-churan.webp",
+      "assets/products/churan/panchratna-churan-hover.webp"
+    ]
+  },
+  {
+    "short": "premium-gift-hamper",
+    "name": "Premium Gift Hamper",
+    "image": [
+      "assets/products/gifts-combos/premium-gift-hamper.webp",
+      "assets/products/gifts-combos/premium-gift-hamper-hover.webp"
+    ]
+  },
+  {
+    "short": "premium-meetha-supari",
+    "name": "Premium Meetha Supari",
+    "image": [
+      "assets/products/supari/premium-meetha-supari.webp",
+      "assets/products/supari/premium-meetha-supari-hover.webp"
+    ]
+  },
+  {
+    "short": "rainbow-confectionery-mix",
+    "name": "Rainbow Confectionery Mix",
+    "image": [
+      "assets/products/tiny-miny/rainbow-confectionery-mix.webp",
+      "assets/products/tiny-miny/rainbow-confectionery-mix-hover.webp"
+    ]
+  },
+  {
+    "short": "rose-petal-special",
+    "name": "Rose Petal Special",
+    "image": [
+      "assets/products/mukhwas/rose-petal-special.webp",
+      "assets/products/mukhwas/rose-petal-special-hover.webp",
+      "assets/products/mukhwas/rose-petal-special-3.webp"
+    ]
+  },
+  {
+    "short": "royal-anardana-mix",
+    "name": "Royal Anardana Mix",
+    "image": [
+      "assets/products/best-sellers/royal-anardana-mix.webp",
+      "assets/products/best-sellers/royal-anardana-mix-hover.webp"
+    ]
+  },
+  {
+    "short": "royal-pan-masala",
+    "name": "Royal Pan Masala",
+    "image": [
+      "assets/products/best-sellers/royal-pan-masala.webp",
+      "assets/products/best-sellers/royal-pan-masala-hover.webp"
+    ]
+  },
+  {
+    "short": "sada-pan-mix",
+    "name": "Sada Pan Mix",
+    "image": [
+      "assets/products/pan/sada-pan-mix.webp",
+      "assets/products/pan/sada-pan-mix-hover.webp",
+      "assets/products/pan/sada-pan-mix-3.webp"
+    ]
+  },
+  {
+    "short": "saffron-infused-mukhwas",
+    "name": "Saffron Infused Mukhwas",
+    "image": [
+      "assets/products/mukhwas/saffron-infused-mukhwas.webp",
+      "assets/products/mukhwas/saffron-infused-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "saffron-pistachio-symphony",
+    "name": "Saffron Pistachio Symphony",
+    "image": [
+      "assets/products/gifts-combos/saffron-pistachio-symphony.webp",
+      "assets/products/gifts-combos/saffron-pistachio-symphony-hover.webp"
+    ]
+  },
+  {
+    "short": "scented-chocolate-supari",
+    "name": "Scented Chocolate Supari",
+    "image": [
+      "assets/products/supari/scented-chocolate-supari.webp",
+      "assets/products/supari/scented-chocolate-supari-hover.webp",
+      "assets/products/supari/scented-chocolate-supari-3.webp"
+    ]
+  },
+  {
+    "short": "special-meetha-pan",
+    "name": "Special Meetha Pan",
+    "image": [
+      "assets/products/pan/special-meetha-pan.webp",
+      "assets/products/pan/special-meetha-pan-hover.webp"
+    ]
+  },
+  {
+    "short": "spicy-adrak-dhaniya-crunch",
+    "name": "Spicy Adrak Dhaniya Crunch",
+    "image": [
+      "assets/products/mukhwas/spicy-adrak-dhaniya-crunch.webp",
+      "assets/products/mukhwas/spicy-adrak-dhaniya-crunch-hover.webp"
+    ]
+  },
+  {
+    "short": "spicy-minty-saunf-elixir",
+    "name": "Spicy Minty Saunf Elixir",
+    "image": [
+      "assets/products/best-sellers/spicy-minty-saunf-elixir.webp",
+      "assets/products/best-sellers/spicy-minty-saunf-elixir-hover.webp"
+    ]
+  },
+  {
+    "short": "sugar-free-digestive-mix",
+    "name": "Sugar-Free Digestive Mix",
+    "image": [
+      "assets/products/sugar-free/sugar-free-digestive-mix.webp",
+      "assets/products/sugar-free/sugar-free-digestive-mix-hover.webp"
+    ]
+  },
+  {
+    "short": "sugar-free-digestive-mukhwas",
+    "name": "Sugar-Free Digestive Mukhwas",
+    "image": [
+      "assets/products/sugar-free/sugar-free-digestive-mukhwas.webp",
+      "assets/products/sugar-free/sugar-free-digestive-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "sweet-caramelized-elaichi-bliss",
+    "name": "Sweet Caramelized Elaichi Bliss",
+    "image": [
+      "assets/products/tiny-miny/sweet-caramelized-elaichi-bliss.webp",
+      "assets/products/tiny-miny/sweet-caramelized-elaichi-bliss-hover.webp"
+    ]
+  },
+  {
+    "short": "tangy-imli-goli-temptation",
+    "name": "Tangy Imli Goli Temptation",
+    "image": [
+      "assets/products/best-sellers/tangy-imli-goli-temptation.webp",
+      "assets/products/best-sellers/tangy-imli-goli-temptation-hover.webp"
+    ]
+  },
+  {
+    "short": "traditional-katha-supari",
+    "name": "Traditional Katha Supari",
+    "image": [
+      "assets/products/supari/traditional-katha-supari.webp",
+      "assets/products/supari/traditional-katha-supari-hover.webp"
+    ]
+  },
+  {
+    "short": "traditional-mixed-seeds-mukhwas",
+    "name": "Traditional Mixed Seeds Mukhwas",
+    "image": [
+      "assets/products/mukhwas/traditional-mixed-seeds-mukhwas.webp",
+      "assets/products/mukhwas/traditional-mixed-seeds-mukhwas-hover.webp"
+    ]
+  },
+  {
+    "short": "wedding-return-gift-pack",
+    "name": "Wedding Return Gift Pack",
+    "image": [
+      "assets/products/gifts-combos/wedding-return-gift-pack.webp",
+      "assets/products/gifts-combos/wedding-return-gift-pack-hover.webp"
+    ]
+  },
+  {
+    "short": "zero-sugar-saunf-mix",
+    "name": "Zero Sugar Saunf Mix",
+    "image": [
+      "assets/products/sugar-free/zero-sugar-saunf-mix.webp",
+      "assets/products/sugar-free/zero-sugar-saunf-mix-hover.webp",
+      "assets/products/sugar-free/zero-sugar-saunf-mix-3.webp"
+    ]
+  }
+]
