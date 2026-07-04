@@ -16,7 +16,8 @@ if not exist "Redis\redis-server.exe" (
 
 :: 2. Start Redis in a new window
 echo [3/4] Starting Redis Server...
-start "Redis Server" cmd /c "cd Redis && redis-server.exe"
+start "Redis Server" cmd /c "Redis\redis-server.exe Redis\redis.windows.conf
+"
 
 :: 3. Start Celery in a new window
 echo [4/4] Starting Celery Worker...

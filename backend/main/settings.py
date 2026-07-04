@@ -279,9 +279,10 @@ CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
     }
 }
 
-# In development without Redis, run tasks synchronously (no worker needed)
-# EAGER_PROPAGATES is False so task exceptions never crash the calling view
-if not os.environ.get('REDIS_URL', ''):
+# In development (DEBUG=True), run Celery tasks synchronously in the same process.
+# This means no separate worker is needed — emails are sent immediately.
+# In production (DEBUG=False), tasks go to the Redis queue and a real worker processes them.
+if DEBUG:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = False
 
