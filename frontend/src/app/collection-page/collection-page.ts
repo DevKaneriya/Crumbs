@@ -28,6 +28,7 @@ export class CollectionPage implements OnInit {
     this.catalogService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.categories = this.categories.slice(1, 9);
         this.isLoading = false;
       },
       error: (err) => {
