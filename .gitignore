@@ -1,48 +1,176 @@
+# =============================================================================
+# Django / Python Backend
+# =============================================================================
+
 # Python bytecode and caches
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
 
-# Django / local database
+# Python virtual environments
+venv/
+.venv/
+env/
+.env_local/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# Test & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+nosetests.xml
+
+# Mypy / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Django runtime
 db.sqlite3
 *.sqlite3
+backend/staticfiles/
+backend/static/
 
-# Environment variables and secrets
+# Django media uploads (user content — managed outside version control)
+backend/media/
+
+# Django logs
+backend/logs/
+
+# Celery
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat.pid
+
+# Redis data dump
+dump.rdb
+*.rdb
+
+# Large seeding / data files (not source code)
+backend/complete_surili_catalog.json
+backend/complete_surili_catalog_user_uploaded.json
+
+# Redis Windows binary (downloaded locally by start.bat)
+backend/Redis/
+
+# =============================================================================
+# Environment Variables & Secrets
+# =============================================================================
+
 .env
 .env.local
 .env.*.local
 *.env
+!.env.example
 
-# Logs
-*.log
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+service-account*.json
+google-services.json
 
-# Frontend build outputs
+# =============================================================================
+# Angular / Node Frontend
+# =============================================================================
+
+# Dependencies
 frontend/node_modules/
+
+# Build outputs
 frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/bazel-out/
+
+# Angular CLI cache
 frontend/.angular/
+
+# Firebase (only ignore local cache, keep deployment config in git)
 frontend/.firebase/
 
-# OS/editor noise
-.DS_Store
-Thumbs.db
+# Karma test output
+frontend/coverage/
+
+# npm / yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# =============================================================================
+# IDE & Editor
+# =============================================================================
+
+# VS Code (keep shared settings, ignore personal/generated files)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# JetBrains IDEs (PyCharm, WebStorm, etc.)
 .idea/
-.vscode/
+*.iml
+*.iws
+*.ipr
 
-# Media and static files (production)
-backend/media/
-backend/staticfiles/
-backend/static/
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
 
-# Redis Windows binary (downloaded locally by start.bat)
-backend/Redis/
+# =============================================================================
+# Kiro / AI tooling
+# =============================================================================
+
+.emergent/
+
+# =============================================================================
+# OS Artifacts
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# =============================================================================
+# Misc
+# =============================================================================
 
 # Backup files
 *.bak
 *.swp
 *.swo
-*~
-.env.*
-credentials.json
-*.pem
-*.key
-.credentials
+*.orig
+*.tmp
+
+# Logs (general)
+*.log
+
