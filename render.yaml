@@ -57,48 +57,6 @@ services:
       - key: RAZORPAY_WEBHOOK_SECRET
         sync: false
 
-  # Celery Worker Service
-  - type: worker
-    name: crumbs-celery-worker
-    runtime: python
-    region: oregon
-    plan: free
-    rootDir: backend
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "celery -A main worker --loglevel=info"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: DEBUG
-        value: False
-      - key: DJANGO_SECRET_KEY
-        sync: false
-      - key: DATABASE_URL
-        fromDatabase:
-          name: crumbs-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: crumbs-redis
-          type: redis
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          name: crumbs-redis
-          type: redis
-          property: connectionString
-      - key: CELERY_RESULT_BACKEND
-        fromService:
-          name: crumbs-redis
-          type: redis
-          property: connectionString
-      - key: USE_REAL_EMAIL
-        value: False
-      - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
-        sync: false
-
   # Redis Instance
   - type: redis
     name: crumbs-redis
