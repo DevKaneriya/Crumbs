@@ -300,12 +300,14 @@ CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
     }
 }
 
-# In development (DEBUG=True), run Celery tasks synchronously in the same process.
-# This means no separate worker is needed — emails are sent immediately.
-# In production (DEBUG=False), tasks go to the Redis queue and a real worker processes them.
-if DEBUG:
+# Run Celery tasks synchronously (no worker needed for free tier)
+# Set RUN_CELERY_SYNC=True in environment to run tasks immediately
+RUN_CELERY_SYNC = os.environ.get('RUN_CELERY_SYNC', 'True').lower() == 'true'
+
+if RUN_CELERY_SYNC:
+    # Tasks execute immediately in the same process (no worker needed)
     CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = False
+    CELERY_TASK_EAGER_PROPAGATES = True
 
 # Cache Backend — Redis in production, in-memory in development
 REDIS_URL = os.environ.get('REDIS_URL', '')
