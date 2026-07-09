@@ -33,8 +33,8 @@
 
             <div class="image-container">
 
-                <img [src]="product.images[0]?.image_path" class="img default" />
-                <img [src]="product.images[1]?.image_path" class="img hover" />
+                <img [src]="product.images[0]?.image_path" class="img default" loading="lazy" />
+                <img [src]="product.images[1]?.image_path" class="img hover" loading="lazy" />
 
                 <button class="wishlist-btn" (click)="toggleWishlist(product, $event)">
                     <i class="fas fa-heart" [class.active]="wishlistService.isInWishlist(product.id)"></i>

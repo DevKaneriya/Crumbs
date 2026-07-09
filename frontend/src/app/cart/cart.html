@@ -14,7 +14,7 @@
                 
 
                 <div class="card-wrapper">
-                    <img (click)="navigate('/products',item.route)" [src]="item.image" alt="product">
+                    <img (click)="navigate('/products',item.route)" [src]="item.image" alt="product" loading="lazy">
                     <div class="details">
                         <div (click)="navigate('/products',item.route)" class="name">{{ item.name }}</div>
                         <div class="variant">Size: {{ item.variant }}</div>
