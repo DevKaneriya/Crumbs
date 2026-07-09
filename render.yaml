@@ -99,6 +99,13 @@ services:
       - key: EMAIL_HOST_PASSWORD
         sync: false
 
+  # Redis Instance
+  - type: redis
+    name: crumbs-redis
+    region: oregon
+    plan: free
+    maxmemoryPolicy: noeviction
+
 databases:
   # PostgreSQL Database
   - name: crumbs-db
@@ -106,11 +113,3 @@ databases:
     user: crumbs_user
     plan: free
     region: oregon
-
-# Redis Instance
-services:
-  - type: redis
-    name: crumbs-redis
-    region: oregon
-    plan: free
-    maxmemoryPolicy: noeviction
