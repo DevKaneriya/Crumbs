@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-production-domain.com/api',
-  razorpayKeyId: 'rzp_live_REPLACE_WITH_YOUR_LIVE_KEY_ID'
+  apiUrl: 'https://crumbs-backend-3qf8.onrender.com/api',
+  razorpayKeyId: 'rzp_test_T8j1yYCwwRxoH2'  // Using test key for now
 };
