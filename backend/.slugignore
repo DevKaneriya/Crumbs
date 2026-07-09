@@ -1,0 +1,19 @@
+# Files to ignore during deployment build
+*.pyc
+__pycache__/
+*.sqlite3
+.env
+.env.local
+*.log
+.git/
+.vscode/
+node_modules/
+.pytest_cache/
+htmlcov/
+.coverage
+*.pot
+*.mo
+local_settings.py
+db.sqlite3
+media/
+backups/
