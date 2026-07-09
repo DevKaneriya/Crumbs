@@ -33,7 +33,7 @@ export class ProductSwiper implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.catalogService.getProducts().subscribe({
+    this.catalogService.getProducts({ category: 'best-sellers' }).subscribe({
       next: (products) => {
         this.products = products;
         this.isLoading = false;
@@ -94,7 +94,7 @@ export class ProductSwiper implements OnInit {
       focusOnSelect: false,
       centerMode: false,
       autoplay: true,
-      autoplaySpeed: 3000,
+      autoplaySpeed: 2000,
       responsive: [
         { breakpoint: 1200, settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false } },
         { breakpoint: 767,  settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },

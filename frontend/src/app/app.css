@@ -6,14 +6,16 @@
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 22px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: opacity 0.3s ease, transform 0.2s ease-in-out;
     opacity: 0.8;
     z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .scroll-top-btn:hover {
@@ -22,31 +24,77 @@
     transform: scale(1.1);
 }
 
-/* Hide on very small scroll up */
-.scroll-top-btn.ng-animating,
-.scroll-top-btn.ng-leave {
-    opacity: 0;
+/* Progress ring */
+.progress-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-90deg);
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+}
+
+.progress-ring__circle {
+    stroke-dasharray: 131.95; /* 2 * π * 21 */
+    stroke-dashoffset: calc(131.95 - (131.95 * var(--scroll-progress, 0%) / 100));
+    transition: stroke-dashoffset 0.1s ease;
+    stroke-linecap: round;
+}
+
+/* Arrow icon */
+.arrow-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+    z-index: 1;
+    transition: transform 0.2s ease;
+    pointer-events: none;
+}
+
+.scroll-top-btn:hover .arrow-icon {
+    transform: translateY(-2px);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .scroll-top-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+        width: 45px;
+        height: 45px;
         bottom: 35px;
         right: 15px;
+    }
+    
+    .progress-ring {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .arrow-icon {
+        width: 18px;
+        height: 18px;
     }
 }
 
 @media (max-width: 480px) {
     .scroll-top-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 18px;
+        width: 40px;
+        height: 40px;
         bottom: 30px;
         right: 10px;
     }
+    
+    .progress-ring {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .arrow-icon {
+        width: 16px;
+        height: 16px;
+    }
 }
 
-
+
+
+
