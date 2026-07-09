@@ -1,12 +1,12 @@
 # Django Core
 Django==5.1.7
-djangorestframework==3.17.1
-djangorestframework_simplejwt==5.5.1
-django-cors-headers==4.9.0
-django-filter==25.2
-python-dotenv==1.2.1
-whitenoise==6.12.0
-gunicorn==26.0.0
+djangorestframework==3.15.2
+djangorestframework_simplejwt==5.3.1
+django-cors-headers==4.3.1
+django-filter==24.2
+python-dotenv==1.0.1
+whitenoise==6.7.0
+gunicorn==22.0.0
 dj-database-url==2.2.0  # Parse DATABASE_URL for Render
 
 # Database
@@ -14,16 +14,16 @@ sqlparse==0.5.1
 psycopg2-binary==2.9.10  # PostgreSQL adapter
 
 # Redis & Celery (async task queue)
-redis==8.0.1
-django-redis==7.0.0
-celery==5.6.3
-kombu==5.6.2
-billiard==4.2.4
+redis==5.0.8
+django-redis==5.4.0
+celery==5.4.0
+kombu==5.4.1
+billiard==4.2.0
 vine==5.1.0
-amqp==5.3.1
+amqp==5.2.0
 
 # Image handling
-Pillow==12.0.0
+Pillow==10.4.0
 
 # HTTP
 requests==2.31.0
