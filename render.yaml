@@ -105,6 +105,7 @@ services:
     region: oregon
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList: []  # Allow access from all Render services
 
 databases:
   # PostgreSQL Database
