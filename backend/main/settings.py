@@ -193,6 +193,9 @@ if not DEBUG:
     
     # Security headers
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Cross-Origin policies for cross-domain cookie support
+    SECURE_CROSS_ORIGIN_OPENER_POLICY = None  # Allow cross-origin cookies
 
 
 
