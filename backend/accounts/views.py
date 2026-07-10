@@ -31,29 +31,20 @@ User = get_user_model()
 
 
 def _set_auth_cookies(response, access_token, refresh_token=None):
-    # Don't set domain for cookies - let browser handle it automatically
-    # This allows cookies to work across different domains with SameSite=None
-    response.set_cookie(
-        settings.AUTH_COOKIE_ACCESS,
-        access_token,
-        max_age=settings.AUTH_COOKIE_MAX_AGE_ACCESS,
-        httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-        secure=settings.AUTH_COOKIE_SECURE,
-        samesite=settings.AUTH_COOKIE_SAMESITE,
-        path='/',
-        domain=None,  # Let browser handle domain
-    )
+    """Set authentication cookies with proper cross-domain settings."""
+    cookie_settings = {
+        'max_age': settings.AUTH_COOKIE_MAX_AGE_ACCESS,
+        'httponly': settings.AUTH_COOKIE_HTTP_ONLY,
+        'secure': settings.AUTH_COOKIE_SECURE,
+        'samesite': settings.AUTH_COOKIE_SAMESITE,
+        'path': '/',
+    }
+    
+    response.set_cookie(settings.AUTH_COOKIE_ACCESS, access_token, **cookie_settings)
+    
     if refresh_token is not None:
-        response.set_cookie(
-            settings.AUTH_COOKIE_REFRESH,
-            refresh_token,
-            max_age=settings.AUTH_COOKIE_MAX_AGE_REFRESH,
-            httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-            secure=settings.AUTH_COOKIE_SECURE,
-            samesite=settings.AUTH_COOKIE_SAMESITE,
-            path='/',
-            domain=None,  # Let browser handle domain
-        )
+        cookie_settings['max_age'] = settings.AUTH_COOKIE_MAX_AGE_REFRESH
+        response.set_cookie(settings.AUTH_COOKIE_REFRESH, refresh_token, **cookie_settings)
 
 
 def _clear_auth_cookies(response):
