@@ -31,6 +31,8 @@ User = get_user_model()
 
 
 def _set_auth_cookies(response, access_token, refresh_token=None):
+    # Don't set domain for cookies - let browser handle it automatically
+    # This allows cookies to work across different domains with SameSite=None
     response.set_cookie(
         settings.AUTH_COOKIE_ACCESS,
         access_token,
@@ -39,6 +41,7 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
         secure=settings.AUTH_COOKIE_SECURE,
         samesite=settings.AUTH_COOKIE_SAMESITE,
         path='/',
+        domain=None,  # Let browser handle domain
     )
     if refresh_token is not None:
         response.set_cookie(
@@ -49,6 +52,7 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
             secure=settings.AUTH_COOKIE_SECURE,
             samesite=settings.AUTH_COOKIE_SAMESITE,
             path='/',
+            domain=None,  # Let browser handle domain
         )
 
 
