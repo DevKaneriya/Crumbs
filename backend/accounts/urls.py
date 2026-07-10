@@ -20,8 +20,10 @@ from .views import (
     AddressListCreateView,
     AddressRetrieveUpdateDestroyView,
 )
+from .debug_views import debug_cookies
 
 urlpatterns = [
+    path('debug/cookies/', debug_cookies, name='debug_cookies'),  # Debug endpoint
     path('csrf/', CsrfView.as_view(), name='csrf'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
