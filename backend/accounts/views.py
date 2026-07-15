@@ -49,7 +49,11 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
             secure=settings.AUTH_COOKIE_SECURE,
             samesite=settings.AUTH_COOKIE_SAMESITE,
             path='/',
+          
         )
+        print("INSIDE _set_auth_cookies")
+        print("DEBUG =", settings.DEBUG)
+        print("AUTH_COOKIE_SAMESITE =", settings.AUTH_COOKIE_SAMESITE)
 
 
 def _clear_auth_cookies(response):
