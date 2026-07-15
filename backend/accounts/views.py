@@ -36,7 +36,8 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
         'max_age': settings.AUTH_COOKIE_MAX_AGE_ACCESS,
         'httponly': settings.AUTH_COOKIE_HTTP_ONLY,
         'secure': settings.AUTH_COOKIE_SECURE,
-        'samesite': settings.AUTH_COOKIE_SAMESITE,
+        # 'samesite': settings.AUTH_COOKIE_SAMESITE,
+        'samesite': 'None',
         'path': '/',
     }
     
