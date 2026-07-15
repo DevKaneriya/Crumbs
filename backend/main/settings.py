@@ -173,7 +173,7 @@ AUTH_COOKIE_MAX_AGE_ACCESS = 60 * 60        # 1 hour — matches ACCESS_TOKEN_LI
 AUTH_COOKIE_MAX_AGE_REFRESH = 60 * 60 * 24 * 7
 AUTH_COOKIE_SECURE = not DEBUG  # True in production (HTTPS only)
 AUTH_COOKIE_HTTP_ONLY = True
-AUTH_COOKIE_SAMESITE = 'None'
+AUTH_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
 
 # Security Settings for Production
 if not DEBUG:
