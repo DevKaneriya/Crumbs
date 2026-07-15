@@ -44,8 +44,15 @@ def _set_auth_cookies(response, access_token, refresh_token=None):
     response.set_cookie(settings.AUTH_COOKIE_ACCESS, access_token, **cookie_settings)
     
     if refresh_token is not None:
-        cookie_settings['max_age'] = settings.AUTH_COOKIE_MAX_AGE_REFRESH
-        response.set_cookie(settings.AUTH_COOKIE_REFRESH, refresh_token, **cookie_settings)
+        response.set_cookie(
+            settings.AUTH_COOKIE_REFRESH,
+            refresh_token,
+            max_age=settings.AUTH_COOKIE_MAX_AGE_REFRESH,
+            httponly=settings.AUTH_COOKIE_HTTP_ONLY,
+            secure=settings.AUTH_COOKIE_SECURE,
+            samesite=settings.AUTH_COOKIE_SAMESITE,
+            path='/', 
+        )
 
 
 def _clear_auth_cookies(response):
