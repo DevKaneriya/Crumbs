@@ -55,6 +55,8 @@ services:
         sync: false
       - key: RAZORPAY_WEBHOOK_SECRET
         sync: false
+      - key: RUN_CELERY_SYNC
+        value: False
 
   # Celery Worker Service
   - type: worker
@@ -96,6 +98,8 @@ services:
         sync: false
       - key: EMAIL_HOST_PASSWORD
         sync: false
+      - key: RUN_CELERY_SYNC
+        value: False
 
 databases:
   # PostgreSQL Database
