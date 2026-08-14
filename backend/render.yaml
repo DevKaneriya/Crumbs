@@ -24,7 +24,7 @@ services:
         sync: false
       - key: DATABASE_URL
         fromDatabase:
-          name: crumbs-db
+          name: crumbs-db-2026
           property: connectionString
       - key: REDIS_URL
         fromService:
@@ -75,7 +75,7 @@ services:
         sync: false
       - key: DATABASE_URL
         fromDatabase:
-          name: crumbs-db
+          name: crumbs-db-2026
           property: connectionString
       - key: REDIS_URL
         fromService:
@@ -102,8 +102,8 @@ services:
         value: False
 
 databases:
-  # PostgreSQL Database
-  - name: crumbs-db
+  # PostgreSQL Database (New instance - created January 2026)
+  - name: crumbs-db-2026
     databaseName: crumbs_db
     user: crumbs_user
     plan: free
